@@ -35,13 +35,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    email = models.EmailField(
-        verbose_name="email address",
-        max_length=255,
-        unique=True,
-        null=True,
-        blank=True,
-    )
+    email = models.EmailField(verbose_name="email address", max_length=255, unique=True, null=True, blank=True)
     phone = models.CharField(unique=True, max_length=12, verbose_name='phone number')
     full_name = models.CharField(verbose_name="full name", max_length=100)
     is_active = models.BooleanField(default=True)

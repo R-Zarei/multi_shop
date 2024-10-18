@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+from django.core import validators
+from django.contrib.auth import authenticate
 
 from account.models import User
 
@@ -45,3 +47,27 @@ class UserChangeForm(forms.ModelForm):
         model = User
         fields = ['phone', "email", "password", "full_name", "is_active", "is_admin"]
 
+
+def start_with_zero(value):   # custom validator.
+    if value[0] != '0':
+        raise ValidationError('Please enter a valid phone number', code='invalid_phone', )
+
+
+class UserLoginForm(forms.Form):
+    phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Phone Number'}),
+                            validators=[start_with_zero])
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password'}))
+
+    def clean(self):
+        phone = self.cleaned_data.get('phone')
+        password = self.cleaned_data.get('password')
+        if not authenticate(username=phone, password=password):
+            raise ValidationError("Incorrect phone or password!")
+
+    # can use "validators = [validators.MaxLengthValidator(11)])" in "phone" fild.
+    def clean_phone(self):
+        phone_number = self.cleaned_data.get('phone')
+        if len(phone_number) != 11:
+            raise ValidationError("Phone number must be 11 digits", code='invalid_phone',
+                                  params={'value': f'{phone_number}'})
+        return phone_number
