@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import UserLoginForm
-from django.contrib.auth import login, decorators
+from django.contrib.auth import login, logout, decorators
 from .models import User
 
 
@@ -16,3 +16,8 @@ def user_login(request):
     else:
         form = UserLoginForm()
     return render(request, 'account/login.html', {'form': form})
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('/')
