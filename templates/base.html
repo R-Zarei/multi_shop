@@ -54,7 +54,7 @@
                                     data-toggle="dropdown">My Account</button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a href="{% url 'account:login' %}"><button class="dropdown-item" type="button" >Sign in</button></a>
-                                <button class="dropdown-item" type="button">Sign up</button>
+                                <a href="{% url 'account:register' %}"><button class="dropdown-item" type="button">Sign up</button></a>
                             </div>
                             {% endif %}
                         </div>
@@ -145,7 +145,7 @@
                         </button>
                         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                             <div class="navbar-nav mr-auto py-0">
-                                <a href="index.html" class="nav-item nav-link active">Home</a>
+                                <a href="{% url 'home' %}" class="nav-item nav-link active">Home</a>
                                 <a href="shop.html" class="nav-item nav-link">Shop</a>
                                 <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
                                 <div class="nav-item dropdown">

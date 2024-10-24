@@ -48,7 +48,7 @@ class UserChangeForm(forms.ModelForm):
         fields = ['phone', "email", "password", "full_name", "is_active", "is_admin"]
 
 
-def start_with_zero(value):   # custom validator.
+def start_with_zero(value):  # custom validator.
     if value[0] != '0':
         raise ValidationError('Please enter a valid phone number', code='invalid_phone', )
 
@@ -71,3 +71,30 @@ class UserLoginForm(forms.Form):
             raise ValidationError("Phone number must be 11 digits", code='invalid_phone',
                                   params={'value': f'{phone_number}'})
         return phone_number
+
+
+class UserRegistrationForm(forms.Form):
+    phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Phone Number'}),
+                            validators=[start_with_zero])
+    full_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Full name'}),)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password'}))
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password confirmation'}))
+
+    def clean(self):  # check phone number already taken.
+        if User.objects.filter(phone=self.cleaned_data.get('phone')).exists():
+            raise ValidationError('This phone number is already taken', code='phone_taken')
+
+        if self.cleaned_data.get('password') != self.cleaned_data.get('password2'):
+            raise ValidationError("Passwords don't match", code='password_mismatch')
+
+    def clean_phone(self):
+        phone_number = self.cleaned_data.get('phone')
+        if len(phone_number) != 11:
+            raise ValidationError("Phone number must be 11 digits", code='invalid_phone')
+        return phone_number
+
+
+class OtpForm(forms.Form):
+    code = forms.CharField(
+        widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Enter Verification Code'}))

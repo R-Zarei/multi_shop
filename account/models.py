@@ -1,9 +1,11 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, phone, password=None):
+    def create_user(self, phone, full_name, password=None):
         """
         Creates and saves a User with the given email
         and password.
@@ -13,6 +15,7 @@ class UserManager(BaseUserManager):
 
         user = self.model(
             phone=phone,
+            full_name=full_name
             # email=self.normalize_email(email),
         )
 
@@ -64,3 +67,15 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+class Otp(models.Model):
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    phone = models.CharField(max_length=11)
+    rand_code = models.CharField(max_length=10)
+    password = models.CharField(max_length=30)
+    full_name = models.CharField(max_length=100)
+    expiration_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.phone
