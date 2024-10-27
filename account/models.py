@@ -69,6 +69,7 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
+'''
 class Otp(models.Model):
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     phone = models.CharField(max_length=11)
@@ -79,3 +80,4 @@ class Otp(models.Model):
 
     def __str__(self):
         return self.phone
+'''
