@@ -98,3 +98,18 @@ class UserRegistrationForm(forms.Form):
 class OtpForm(forms.Form):
     code = forms.CharField(
         widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Enter Verification Code'}))
+
+
+class LoginWithOtpForm(forms.Form):
+    phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Phone Number'}),
+                            validators=[start_with_zero])
+
+    def clean_phone(self):
+        phone_number = self.cleaned_data.get('phone')
+        if len(phone_number) != 11:
+            raise ValidationError("Phone number must be 11 digits", code='invalid_phone')
+
+        if not User.objects.filter(phone=phone_number).exists():
+            raise ValidationError('This phone number not found', code='invalid_phone')
+
+        return phone_number

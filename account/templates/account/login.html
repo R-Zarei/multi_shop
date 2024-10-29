@@ -41,16 +41,25 @@
                                 required="required" data-validation-required-message="Please enter your name" />-->
                             <p class="help-block text-danger"></p>
                         </div>
-                        <div class="control-group">
-                            {{ form.password }}
-                            <!--<input type="email" class="form-control" id="email" placeholder="Your Email"
-                                required="required" data-validation-required-message="Please enter your email" />-->
-                            <p class="help-block text-danger"></p>
-                        </div>
 
-                        <div>
-                            <button class="btn btn-primary py-2 px-4" type="submit" id="Login">Login</button>
-                        </div>
+                        {% if request.resolver_match.url_name == "login" %}
+                            <div class="control-group">
+                                {{ form.password }}
+                                <!--<input type="email" class="form-control" id="email" placeholder="Your Email"
+                                    required="required" data-validation-required-message="Please enter your email" />-->
+                                <p class="help-block text-danger"></p>
+                            </div>
+
+                            <div>
+                                <button class="btn btn-primary py-2 px-4" type="submit" id="Login">Login</button>
+                                <a href="{% url 'account:login_with_opt' %}" style="margin-left: 15px; font-size: 14px">Login with otp</a>
+                            </div>
+                        {% else %}
+                            <div>
+                                <button class="btn btn-primary py-2 px-4" type="submit" id="Login">Send</button>
+                                <a href="{% url 'account:login' %}" style="margin-left: 15px; font-size: 14px">Login with password</a>
+                            </div>
+                        {% endif %}
                     </form>
                 </div>
             </div>

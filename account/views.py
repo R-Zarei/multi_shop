@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from .forms import UserLoginForm, UserRegistrationForm, OtpForm
+from .forms import UserLoginForm, UserRegistrationForm, OtpForm, LoginWithOtpForm
 from django.contrib.auth import login, logout, decorators
-from .models import User, Otp
+from .models import User
 from kavenegar import KavenegarAPI
 from random import randint
 from django.urls import reverse
@@ -22,6 +22,29 @@ def user_login(request):
             return redirect('/')
     else:
         form = UserLoginForm()
+
+    return render(request, 'account/login.html', {'form': form})
+
+
+def user_login_with_opt(request):
+    if request.user.is_authenticated:
+        return redirect('/')
+
+    if request.method == 'POST':
+        form = LoginWithOtpForm(request.POST)
+        if form.is_valid():
+            rand_code = randint(1000, 9999)
+            print(rand_code)
+            '''response = SMS.sms_send(
+                {'receptor': str(cd.get('phone')), 'message': f'Multi Shop\nVerification code: {rand_code}'})'''
+            request.session.set_expiry(120)
+            request.session['opt'] = {'phone': form.cleaned_data['phone'],
+                                      'code': rand_code,
+                                      'full_name': None,
+                                      'password': None}
+            return redirect(reverse('account:check_otp'))
+    else:
+        form = LoginWithOtpForm()
 
     return render(request, 'account/login.html', {'form': form})
 
@@ -64,8 +87,12 @@ def check_opt(request):
         form = OtpForm(request.POST)
         user_info = request.session.get('opt', {})
         if form.is_valid() and user_info and int(form.cleaned_data.get('code')) == user_info.get('code'):
-            user = User.objects.create_user(phone=user_info['phone'], full_name=user_info['full_name'],
-                                            password=user_info['password'])
+            user, created = User.objects.get_or_create(phone=user_info['phone'],
+                                                       defaults=({'full_name': user_info['full_name']}))
+            # get_or_create() doesn't hash password to create user that's why we use set_password for the user.
+            if created:
+                user.set_password(user_info['password'])
+                user.save()
             login(request, user)
             return redirect('/')
         else:
