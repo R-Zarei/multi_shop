@@ -15,10 +15,12 @@
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle"
                                 data-toggle="dropdown">{{ request.user.full_name }}</button>
                         <div class="dropdown-menu dropdown-menu-right">
+                            <a href="{% url 'account:profile' %}">
+                                <button class="dropdown-item" type="button">Profile</button>
+                            </a>
                             <a href="{% url 'account:logout' %}">
                                 <button class="dropdown-item" type="button">Sign out</button>
                             </a>
-                            <button class="dropdown-item" type="button">Profile</button>
                         </div>
                     {% else %}
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle"

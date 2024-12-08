@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
-from .forms import UserLoginForm, UserRegistrationForm, OtpForm, LoginWithOtpForm
+from .forms import UserLoginForm, UserRegistrationForm, OtpForm, LoginWithOtpForm, UserProfileForm, ChangePasswordForm
 from django.contrib.auth import login, logout, decorators
 from .models import User
 from kavenegar import KavenegarAPI
 from random import randint
 from django.urls import reverse
-from datetime import timedelta
-from django.utils import timezone
+from django.contrib import messages
 
 SMS = KavenegarAPI(apikey='484236523838636B4178655269387331566A7932673638786D6C6155376B7944554137435A3973424335733D')
 
@@ -123,3 +122,32 @@ if request.method == 'POST':
                     otp.delete()
                 form.add_error('code', 'Verification code is invalid')
 '''
+
+
+@decorators.login_required
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+    else:
+        form = UserProfileForm(instance=user)
+
+    return render(request, 'account/user_profile.html', {'form': form})
+
+
+@decorators.login_required
+def change_password(request):
+    user = request.user
+    if request.method == 'POST':
+        form = ChangePasswordForm(user=user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your password has been updated.')
+            return redirect('account:profile')
+    else:
+        form = ChangePasswordForm()
+    return render(request, 'account/change_password.html', {'form': form})
+
+

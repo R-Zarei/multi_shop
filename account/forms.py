@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core import validators
 from django.contrib.auth import authenticate
 from account.models import User
+from django.contrib.auth.hashers import make_password
 
 
 class UserCreationForm(forms.ModelForm):
@@ -75,7 +76,7 @@ class UserLoginForm(forms.Form):
 class UserRegistrationForm(forms.Form):
     phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Phone Number'}),
                             validators=[start_with_zero])
-    full_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Full name'}),)
+    full_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Full name'}), )
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password'}))
     password2 = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password confirmation'}))
@@ -112,3 +113,44 @@ class LoginWithOtpForm(forms.Form):
             raise ValidationError('This phone number not found', code='invalid_phone')
 
         return phone_number
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['full_name', 'email']
+        widgets = {
+            # 'phone': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Phone Number'}),
+            'full_name': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Full name'}),
+            'email': forms.EmailInput(attrs={'class': "form-control", 'placeholder': 'Email'}),
+            # 'password': forms.PasswordInput(
+            #    attrs={'class': "form-control", 'placeholder': 'Password', 'required': False}),
+        }
+
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Old Password'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password'}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'class': "form-control", 'placeholder': 'Password confirmation'}))
+
+    def __init__(self, user=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = user
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        if not self.user.check_password(old_password):
+            raise ValidationError("Old password incorrect", code='password_incorrect')
+        return old_password
+
+    def clean(self):
+        password = self.cleaned_data.get('password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+        if password != confirm_password:
+            raise ValidationError("Passwords don't match", code='password_mismatch')
+
+    def save(self, commit=True):
+        password = self.cleaned_data.get('password')
+        self.user.set_password(password)
+        if commit:
+            self.user.save()
