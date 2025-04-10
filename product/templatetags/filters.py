@@ -18,7 +18,7 @@ def halve_list(value: list):
         if length % 2 == 0:
             half = length // 2
         else:
-            half = len(value) // 2 + 1
+            half = length // 2 + 1
         return value[:half], value[half:]
     except:
         return []

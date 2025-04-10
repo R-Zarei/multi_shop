@@ -9,7 +9,7 @@ class InformationAdmin(admin.StackedInline):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price')
+    list_display = ('id', 'title', 'price')
     inlines = [InformationAdmin]
 
 
