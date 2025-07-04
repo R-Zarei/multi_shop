@@ -8,12 +8,15 @@ $(document).ready(function() {
         if (submit_button_name === "add-to-cart-button") {
             var actionUrl = $(this).attr("action"); // Get the form action URL
             var formData = $(this).serialize(); // Collect form data
-            formData += "&csrfmiddlewaretoken=" + csrfToken; // Append CSRF token to form data
+            // formData += "&csrfmiddlewaretoken=" + csrfToken; // Append CSRF token to form data
 
             $.ajax({
                 type: "POST",
                 url: actionUrl,
                 data: formData,
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                },
                 success: function (response) {
                     $("#cart-num").text(response.cart_quantity); // Assign input value to span
 
@@ -37,7 +40,9 @@ $(document).ready(function() {
                 url: removeFromCartUrl,
                 data: {
                     "product_id": productId + "-" + formData.get('color') + "-" + size,
-                    "csrfmiddlewaretoken": csrfToken
+                },
+                headers: {
+                  "X-CSRFToken": csrfToken,
                 },
                 success: function (response) {
                     $("#cart-num").text(response.cart_quantity);
@@ -71,7 +76,10 @@ $(document).ready(function() {
             url: $('#checkCartUrl').val(),
             data: {
                 'product_id': product_id,
-                'csrfmiddlewaretoken': csrfToken
+                // 'csrfmiddlewaretoken': csrfToken
+            },
+            headers: {
+                "X-CSRFToken": csrfToken,
             },
             success: function (response) {
                 console.log(response);

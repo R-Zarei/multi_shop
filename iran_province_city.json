@@ -1,0 +1,268 @@
+{
+  "Tehran": [
+    "Tehran",
+    "Eslamshahr",
+    "Rey",
+    "Shemiranat",
+    "Robat Karim",
+    "Pakdasht",
+    "Varamin",
+    "Damavand",
+    "Malard",
+    "Qods",
+    "Pardis"
+  ],
+  "Isfahan": [
+    "Isfahan",
+    "Kashan",
+    "Najafabad",
+    "Khomeinishahr",
+    "Shahinshahr",
+    "Lenjan",
+    "Mobarakeh",
+    "Falavarjan",
+    "Ardestan",
+    "Na'in",
+    "Fereydunshahr"
+  ],
+  "Fars": [
+    "Shiraz",
+    "Marvdasht",
+    "Jahrom",
+    "Fasa",
+    "Kazerun",
+    "Darab",
+    "Neyriz",
+    "Lamerd",
+    "Larestan",
+    "Sepidan"
+  ],
+  "Khorasan Razavi": [
+    "Mashhad",
+    "Neyshabur",
+    "Sabzevar",
+    "Torbat-e Heydarieh",
+    "Chenaran",
+    "Quchan",
+    "Kalat",
+    "Sarakhs",
+    "Fariman",
+    "Taybad"
+  ],
+  "East Azerbaijan": [
+    "Tabriz",
+    "Maragheh",
+    "Marand",
+    "Meyaneh",
+    "Ahar",
+    "Bonab",
+    "Osku",
+    "Sarab",
+    "Shabestar"
+  ],
+  "West Azerbaijan": [
+    "Urmia",
+    "Khoy",
+    "Mahabad",
+    "Miandoab",
+    "Bukan",
+    "Naqadeh",
+    "Salmas",
+    "Piranshahr"
+  ],
+  "Mazandaran": [
+    "Sari",
+    "Amol",
+    "Babol",
+    "Qaemshahr",
+    "Tonekabon",
+    "Nowshahr",
+    "Chalus",
+    "Behshahr",
+    "Neka"
+  ],
+  "Gilan": [
+    "Rasht",
+    "Anzali",
+    "Lahijan",
+    "Langarud",
+    "Astara",
+    "Rudbar",
+    "Talesh",
+    "Sowme'eh Sara"
+  ],
+  "Kerman": [
+    "Kerman",
+    "Rafsanjan",
+    "Sirjan",
+    "Jiroft",
+    "Bam",
+    "Zarand",
+    "Baft",
+    "Shahr-e Babak"
+  ],
+  "Khuzestan": [
+    "Ahvaz",
+    "Abadan",
+    "Dezful",
+    "Khorramshahr",
+    "Masjed Soleyman",
+    "Mahshahr",
+    "Andimeshk",
+    "Behbahan"
+  ],
+  "Kermanshah": [
+    "Kermanshah",
+    "Islamabad-e Gharb",
+    "Javanrud",
+    "Paveh",
+    "Qasr-e Shirin",
+    "Sarpol-e Zahab",
+    "Harsin"
+  ],
+  "Hormozgan": [
+    "Bandar Abbas",
+    "Minab",
+    "Qeshm",
+    "Bandar Lengeh",
+    "Jask",
+    "Hajjiabad"
+  ],
+  "Bushehr": [
+    "Bushehr",
+    "Borazjan",
+    "Ganaveh",
+    "Jam",
+    "Kangan",
+    "Dashtestan",
+    "Deylam"
+  ],
+  "Sistan and Baluchestan": [
+    "Zahedan",
+    "Zabol",
+    "Chabahar",
+    "Iranshahr",
+    "Saravan",
+    "Khash",
+    "Nikshahr"
+  ],
+  "Lorestan": [
+    "Khorramabad",
+    "Borujerd",
+    "Dorud",
+    "Kuhdasht",
+    "Azna",
+    "Aligudarz",
+    "Pol-e Dokhtar"
+  ],
+  "Yazd": [
+    "Yazd",
+    "Ardakan",
+    "Mehriz",
+    "Taft",
+    "Bafq",
+    "Sadough",
+    "Ashkezar"
+  ],
+  "Qazvin": [
+    "Qazvin",
+    "Takestan",
+    "Abyek",
+    "Buin Zahra",
+    "Alvand"
+  ],
+  "Qom": [
+    "Qom"
+  ],
+  "Markazi": [
+    "Arak",
+    "Saveh",
+    "Mahallat",
+    "Delijan",
+    "Shazand",
+    "Khomein"
+  ],
+  "Zanjan": [
+    "Zanjan",
+    "Abhar",
+    "Khodabandeh",
+    "Tarom",
+    "Mahneshan"
+  ],
+  "Hamadan": [
+    "Hamadan",
+    "Malayer",
+    "Nahavand",
+    "Tuyserkan",
+    "Asadabad",
+    "Kabudarahang"
+  ],
+  "Golestan": [
+    "Gorgan",
+    "Gonbad-e Kavus",
+    "Aliabad",
+    "Kordkuy",
+    "Bandar-e Torkaman",
+    "Azadshahr"
+  ],
+  "Kohgiluyeh and Boyer-Ahmad": [
+    "Yasuj",
+    "Gachsaran",
+    "Dehdasht",
+    "Dogonbadan"
+  ],
+  "Chaharmahal and Bakhtiari": [
+    "Shahrekord",
+    "Borujen",
+    "Lordegan",
+    "Farsan",
+    "Ardal"
+  ],
+  "North Khorasan": [
+    "Bojnurd",
+    "Shirvan",
+    "Esfarayen",
+    "Garmeh",
+    "Jajarm"
+  ],
+  "South Khorasan": [
+    "Birjand",
+    "Qaen",
+    "Ferdows",
+    "Nehbandan",
+    "Sarayan"
+  ],
+  "Ilam": [
+    "Ilam",
+    "Mehran",
+    "Dehloran",
+    "Eyvan"
+  ],
+  "Semnan": [
+    "Semnan",
+    "Shahrud",
+    "Damghan",
+    "Garmsar",
+    "Mehdishahr"
+  ],
+  "Alborz": [
+    "Karaj",
+    "Taleqan",
+    "Eshtehard",
+    "Nazarabad"
+  ],
+  "Ardabil": [
+    "Ardabil",
+    "Parsabad",
+    "Meshginshahr",
+    "Germi",
+    "Khalkhal"
+  ],
+  "Hamedan": [
+    "Hamedan",
+    "Malayer",
+    "Tuyserkan",
+    "Asadabad",
+    "Nahavand"
+  ]
+}

@@ -8,7 +8,9 @@ $(document).ready(function () {
             type: "POST",
             data: {
                 "product_id": productId,
-                "csrfmiddlewaretoken": csrfToken
+            },
+            headers: {
+                "X-CSRFToken": csrfToken,
             },
             success: function (response) {
                     row.fadeOut(300, function () {
@@ -18,7 +20,7 @@ $(document).ready(function () {
                         $("#cart-num").text(response.cart_quantity);
             },
             error: function () {
-                alert("Something went wrong. Please try again.");
+                alert("Something went wrong! Please try again.");
             }
         });
     });

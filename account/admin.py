@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Address, Province, City
 from .forms import UserChangeForm, UserCreationForm
+
+
+class AddressAdmin(admin.StackedInline):
+    model = Address
+    extra = 0
 
 
 @admin.register(User)
@@ -35,6 +40,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ['phone', "email"]
     ordering = ["email"]
     filter_horizontal = []
+    inlines = [AddressAdmin]
 
 
 # Now register the new UserAdmin...
@@ -43,3 +49,6 @@ class UserAdmin(BaseUserAdmin):
 # unregister the Group model from admin.
 admin.site.unregister(Group)
 #admin.site.register(Otp)
+admin.site.register(Address)
+admin.site.register(Province)
+admin.site.register(City)

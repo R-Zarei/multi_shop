@@ -70,6 +70,32 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
+class Province(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class City(models.Model):
+    name = models.CharField(max_length=50)
+    province = models.ForeignKey(Province, on_delete=models.CASCADE, related_name='cities')
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    address = models.CharField(max_length=300)
+    zipcode = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.address
+
+
 '''
 class Otp(models.Model):
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -82,3 +108,36 @@ class Otp(models.Model):
     def __str__(self):
         return self.phone
 '''
+
+province_choices = [
+        ('tehran', 'Tehran'),
+        ('khorasan-razavi', 'Khorasan Razavi'),
+        ('isfahan', 'Isfahan'),
+        ('fars', 'Fars'),
+        ('alborz', 'Alborz'),
+        ('ardabil', 'Ardabil'),
+        ('bushehr', 'Bushehr'),
+        ('chaharmahal-bakhtiari', 'Chaharmahal and Bakhtiari'),
+        ('gilan', 'Gilan'),
+        ('golestan', 'Golestan'),
+        ('hamadan', 'Hamadan'),
+        ('hormozgan', 'Hormozgan'),
+        ('ilam', 'Ilam'),
+        ('kerman', 'Kerman'),
+        ('kermanshah', 'Kermanshah'),
+        ('khuzestan', 'Khuzestan'),
+        ('kohgiluyeh-boyer-ahmad', 'Kohgiluyeh and Boyer-Ahmad'),
+        ('kurdistan', 'Kurdistan'),
+        ('lorestan', 'Lorestan'),
+        ('markazi', 'Markazi'),
+        ('mazandaran', 'Mazandaran'),
+        ('north-khorasan', 'North Khorasan'),
+        ('qazvin', 'Qazvin'),
+        ('qom', 'Qom'),
+        ('semnan', 'Semnan'),
+        ('sistan-baluchestan', 'Sistan and Baluchestan'),
+        ('south-khorasan', 'South Khorasan'),
+        ('west-azarbaijan', 'West Azerbaijan'),
+        ('yazd', 'Yazd'),
+        ('zanjan', 'Zanjan'),
+    ]

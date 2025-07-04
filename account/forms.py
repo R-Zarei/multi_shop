@@ -3,7 +3,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.core import validators
 from django.contrib.auth import authenticate
-from account.models import User
+from account.models import User, Address, Province, City
 from django.contrib.auth.hashers import make_password
 
 
@@ -154,3 +154,37 @@ class ChangePasswordForm(forms.Form):
         self.user.set_password(password)
         if commit:
             self.user.save()
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['province', 'city', 'address', 'zipcode']
+        widgets = {
+            'province': forms.Select(attrs={"class": "form-control", 'placeholder': 'Province'}),
+            'city': forms.Select(attrs={"class": "form-control", 'placeholder': 'City'}),
+            'address': forms.TextInput(attrs={"class": "form-control", 'placeholder': 'Address'}),
+            'zipcode': forms.TextInput(attrs={"class": "form-control", 'placeholder': 'Zipcode'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(AddressForm, self).__init__(*args, **kwargs)
+        self.fields['province'].empty_label = 'Province'
+        self.fields['city'].empty_label = 'City'
+        self.fields['province'].queryset = Province.objects.all()
+        self.fields['city'].queryset = City.objects.none()
+        if 'province' in self.data:
+            try:
+                province_id = int(self.data.get('province'))
+                self.fields['city'].queryset = City.objects.filter(province_id=province_id).order_by('name')
+            except(ValueError, TypeError):
+                pass
+        elif self.instance.pk:
+            self.fields['city'].queryset = self.instance.province.cities.order_by('name')
+
+    def clean_zipcode(self):
+        zipcode = self.cleaned_data.get('zipcode')
+        try:
+            return int(zipcode)
+        except ValueError:
+            raise ValidationError("Zipcode must be an integer", code='zipcode_incorrect')

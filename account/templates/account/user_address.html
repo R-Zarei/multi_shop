@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Addresses{% endblock %}
+
+{% block body %}
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="#">Home</a>
+                    <span class="breadcrumb-item active">Contact</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+    <!-- Contact Start -->
+    <div class="container-fluid">
+        <h2 class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4"><span
+                class="bg-secondary pr-3">User Addresses</span></h2>
+        <div class=" px-xl-5">
+            <div class=" mb-5 contact-us" style="">
+
+                <div id="address-boxes">
+                    <!-- Address Box Start -->
+                    {% for addr in addresses %}
+                        <div data-address-id="{{ addr.id }}" class="bg-light p-30 mb-4 address-box" name="address-box">
+                            <h5 class="section-title position-relative text-uppercase mb-3">
+                                <span class="bg-secondary pr-3">Your Address</span>
+                            </h5>
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="fa fa-map-marker-alt text-primary mr-3 mt-1"></i>
+                                <div>
+                                    <h6 class="font-weight-semi-bold mb-1">Address</h6>
+                                    <p class="mb-0 address-text">{{ addr.province }}, {{ addr.city }}, {{ addr }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-start mb-3">
+                                <i class="fa fa-mail-bulk text-primary mr-3 mt-1"></i>
+                                <div>
+                                    <h6 class="font-weight-semi-bold mb-1">Postal Code</h6>
+                                    <p class="mb-0 zip-text">{{ addr.zipcode }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-sm btn-primary mr-2 edit-btn"><i class="fa fa-edit mr-1"></i>Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger delete-btn"><i class="fa fa-trash-alt mr-1"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <!-- Address Box End -->
+                </div>
+
+                <div class="contact-form bg-light p-30" id="add-address-block">
+                    <div id="success"></div>
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                    <form method="post" id="add-address-form">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            {% for error in form.errors %}
+                                <div id="add-address-form-error" class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                            {{ form.province }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            {{ form.city }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            {{ form.address }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            {{ form.zipcode }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="submit-btn">Send</button>
+                        </div>
+
+                        <!-- load_city url -->
+                        <input type="hidden" id="loadCityUrl" value="{% url 'account:lode_city' %}">
+                        <!-- remove_address url -->
+                        <input type="hidden" id="removeAddressUrl" value="{% url 'account:remove_address' %}">
+                        <!-- edit_address url -->
+                        <input type="hidden" id="editAddressUrl" value="{% url 'account:edit_address' %}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Contact End -->
+
+    <!-- Overlay background -->
+    <div id="overlay" style="display: none;"></div>
+
+    <!-- Form for editing address (Hidden by default) -->
+    <div id="edit-address-form" class="container-fluid bg-light p-30">
+        <h5 class="section-title position-relative text-uppercase mb-3">
+            <span class="bg-secondary pr-3">Edit Address</span>
+        </h5>
+        <form id="edit-address">
+            {% csrf_token %}
+            <input type="hidden" name="address_id" id="address_id" value=""> <!-- ID of the address to be edited -->
+
+            <!-- Province Select -->
+            <div class="control-group mb-3">
+                {#                <label for="province" class="font-weight-bold">Province</label>#}
+                <select name="province" class="form-control edit-province" id="id_province" required>
+                    <option value="" selected>Province</option>
+                    <option value="1">Tehran</option>
+                    <option value="2">Isfahan</option>
+                    <option value="3">Fars</option>
+                    <option value="4">Khorasan Razavi</option>
+                    <option value="5">East Azerbaijan</option>
+                    <option value="6">West Azerbaijan</option>
+                    <option value="7">Mazandaran</option>
+                    <option value="8">Gilan</option>
+                    <option value="9">Kerman</option>
+                    <option value="10">Khuzestan</option>
+                    <option value="11">Kermanshah</option>
+                    <option value="12">Hormozgan</option>
+                    <option value="13">Bushehr</option>
+                    <option value="14">Sistan and Baluchestan</option>
+                    <option value="15">Lorestan</option>
+                    <option value="16">Yazd</option>
+                    <option value="17">Qazvin</option>
+                    <option value="18">Qom</option>
+                    <option value="19">Markazi</option>
+                    <option value="20">Zanjan</option>
+                    <option value="21">Hamadan</option>
+                    <option value="22">Golestan</option>
+                    <option value="23">Kohgiluyeh and Boyer-Ahmad</option>
+                    <option value="24">Chaharmahal and Bakhtiari</option>
+                    <option value="25">North Khorasan</option>
+                    <option value="26">South Khorasan</option>
+                    <option value="27">Ilam</option>
+                    <option value="28">Semnan</option>
+                    <option value="29">Alborz</option>
+                    <option value="30">Ardabil</option>
+                    <option value="31">Hamedan</option>
+                    <!-- Add other provinces here -->
+                </select>
+            </div>
+
+            <!-- City Select -->
+            <div class="control-group mb-3">
+{#                <label for="city" class="font-weight-bold">City</label>#}
+                <select name="city" class="form-control edit-city" id="id_city" required>
+                    <option value="" selected>City</option>
+                    <!-- Cities will be loaded dynamically based on the province -->
+                </select>
+            </div>
+
+            <!-- Address Input -->
+            <div class="control-group mb-3">
+{#                <label for="address" class="font-weight-bold">Address</label>#}
+                <input type="text" name="address" class="form-control edit-address" id="id_address" placeholder="Address"
+                       maxlength="300" required>
+            </div>
+
+            <!-- Zipcode Input -->
+            <div class="control-group mb-3">
+{#                <label for="zipcode" class="font-weight-bold">Zipcode</label>#}
+                <input type="text" name="zipcode" class="form-control edit-zipcode" id="id_zipcode" placeholder="Zipcode" maxlength="10"
+                       required>
+            </div>
+
+            <div class="form-group mb-3">
+                <button class="btn btn-primary py-2 px-4" type="submit" id="submit-edit-btn">Save Changes</button>
+                <button type="button" class="btn btn-secondary py-2 px-4" id="close-btn">Close</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js">
+        {#var loadCityUrl = "{% url 'account:lode_city' %}";#}
+    </script>
+    <script src="{% static 'js/ajax/address_page.js' %}"></script>
+{% endblock %}
