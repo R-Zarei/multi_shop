@@ -34,7 +34,7 @@ class Information(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    price = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.ManyToManyField(Discount, related_name='products', null=True, blank=True)
     image = models.ImageField(upload_to='product')
     size = models.ManyToManyField(Size, related_name='products', blank=True, null=True)

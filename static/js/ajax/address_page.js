@@ -82,13 +82,21 @@ $(document).ready(function () {
          submitBtn.prop("disabled", true);  // disable submit btn.
          let data = $(this).serialize();  // Collect form data.
          let csrfToken = $("input[name='csrfmiddlewaretoken']").val();
+         const nextPage = new URLSearchParams(window.location.search).get('next');
+         let url = window.location.pathname;
+         if (nextPage) {
+            url += '?next=' + nextPage;
+         }
 
          $.ajax({
             type: "POST",
-            url: window.location.pathname,
+            url: url,
             data: data,
             headers: {"X-CSRFToken": csrfToken},
             success: function (response) {
+               if (response.redirect_url) {
+                window.location.href = response.redirect_url;
+               }
                $('#add-address-block').find("div.alert-danger").remove();  // remove previous errors.
                if (response.error) {
                   for (let key in response.error_s) {
@@ -194,14 +202,22 @@ $(document).ready(function () {
          editBtn.prop("disabled", true);  // disable submit form btn.
          event.preventDefault();  // Prevent the default form submission.
          let formData = $("#edit-address").serialize();
+         const nextPage = new URLSearchParams(window.location.search).get('next');
+         let url = $("#editAddressUrl").val();
+         if (nextPage) {
+            url += '?next=' + nextPage;
+         }
 
          $.ajax({
             type: "POST",
-            url: $("#editAddressUrl").val(),
+            url: url,
             dataType: "JSON",
             data: formData,
             headers: {"X-CSRFToken": $("input[name='csrfmiddlewaretoken']").val()},
             success: function (response) {
+               if (response.redirect_url) {
+                window.location.href = response.redirect_url;
+               }
                if (response.error) {
                   for (let key in response.error_s) {
                      // alert(response.error_s[key]);

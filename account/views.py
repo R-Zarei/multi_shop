@@ -163,6 +163,9 @@ def user_address(request):
             address = form.save(commit=False)
             address.user = request.user
             address.save()
+            next_page = request.GET.get('next')
+            if next_page is not None:
+                return JsonResponse({'redirect_url': next_page})
             return JsonResponse({
                 "error": False,
                 "id": address.id,
@@ -214,6 +217,9 @@ def edit_address(request):
         form = AddressForm(request.POST, instance=address)
         if form.is_valid():
             form.save()
+            next_page = request.GET.get('next')
+            if next_page is not None:
+                return JsonResponse({'redirect_url': next_page})
             return JsonResponse({
                 "error": False,
                 "address_id": address.id,

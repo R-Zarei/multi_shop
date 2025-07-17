@@ -93,7 +93,7 @@ class Address(models.Model):
     zipcode = models.CharField(max_length=10)
 
     def __str__(self):
-        return self.address
+        return f'{self.province}, {self.city}, {self.address}'
 
 
 '''
@@ -108,36 +108,3 @@ class Otp(models.Model):
     def __str__(self):
         return self.phone
 '''
-
-province_choices = [
-        ('tehran', 'Tehran'),
-        ('khorasan-razavi', 'Khorasan Razavi'),
-        ('isfahan', 'Isfahan'),
-        ('fars', 'Fars'),
-        ('alborz', 'Alborz'),
-        ('ardabil', 'Ardabil'),
-        ('bushehr', 'Bushehr'),
-        ('chaharmahal-bakhtiari', 'Chaharmahal and Bakhtiari'),
-        ('gilan', 'Gilan'),
-        ('golestan', 'Golestan'),
-        ('hamadan', 'Hamadan'),
-        ('hormozgan', 'Hormozgan'),
-        ('ilam', 'Ilam'),
-        ('kerman', 'Kerman'),
-        ('kermanshah', 'Kermanshah'),
-        ('khuzestan', 'Khuzestan'),
-        ('kohgiluyeh-boyer-ahmad', 'Kohgiluyeh and Boyer-Ahmad'),
-        ('kurdistan', 'Kurdistan'),
-        ('lorestan', 'Lorestan'),
-        ('markazi', 'Markazi'),
-        ('mazandaran', 'Mazandaran'),
-        ('north-khorasan', 'North Khorasan'),
-        ('qazvin', 'Qazvin'),
-        ('qom', 'Qom'),
-        ('semnan', 'Semnan'),
-        ('sistan-baluchestan', 'Sistan and Baluchestan'),
-        ('south-khorasan', 'South Khorasan'),
-        ('west-azarbaijan', 'West Azerbaijan'),
-        ('yazd', 'Yazd'),
-        ('zanjan', 'Zanjan'),
-    ]

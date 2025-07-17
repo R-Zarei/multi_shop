@@ -18,7 +18,6 @@ class Cart:
             item['product'] = product
             item['total'] = int(product.price) * int(item.get('quantity', 0))
             item['unique_id'] = f'{item['product_id']}-{item['color']}-{item['size']}'
-            print(item['unique_id'])
             yield item
 
     def add(self, pk: int, color, size, quantity):
@@ -34,6 +33,14 @@ class Cart:
         if uid in self.cart:
             del self.cart[uid]
             self.save()
+
+    def total_price(self):
+        cart = self.cart.values()
+        total = 0
+        for item in cart:
+            product = Product.objects.get(id=item['product_id'])
+            total += product.price * item.get('quantity', 0)
+        return total
 
     def save(self):
         self.session.modified = True

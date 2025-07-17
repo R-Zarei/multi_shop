@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from cart.cart_module import Cart
+from .forms import SelectAddressForm
+from django.views.decorators.http import require_POST, require_GET
 
 
 def cart_detail_view(request):
@@ -26,6 +28,7 @@ def cart_remove_view(request):
     # return redirect('cart:cart_detail')
 
 
+@require_POST
 def check_cart(request):
     cart = Cart(request)
     uid = request.POST.get('product_id')
@@ -33,5 +36,16 @@ def check_cart(request):
         if uid == product['unique_id']:
             return JsonResponse({'is_in': True})
     return JsonResponse({'is_in': False})
+
+
+@require_GET
+def cart_total_price(request):
+    cart = Cart(request)
+    return JsonResponse({'total_price': cart.total_price()})
+
+
+def order_detail_view(request):
+    form = SelectAddressForm(request.user)
+    return render(request, 'cart/order_detail.html', {'form': form})
 
 
