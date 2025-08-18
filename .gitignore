@@ -1,1 +1,9 @@
 multi_shop_future.txt
+
+.venv
+
+.idea
+
+# byte code
+__pycache__/
+*.pyc
