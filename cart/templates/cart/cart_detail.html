@@ -54,7 +54,9 @@
                                     </div>
                                     <input type="text"
                                            class="form-control form-control-sm bg-secondary border-0 text-center"
-                                           value="{{ product.quantity }}">
+                                           data-old-value=""
+                                           value="{{ product.quantity }}"
+                                           readonly>
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
@@ -62,7 +64,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">${{ product.total }}</td>
+                            <td class="align-middle item-total-price">${{ product.total }}</td>
                             <td class="align-middle">
 {#                                 href="{% url 'cart:cart_remove' product.unique_id %}">#}
                                 <button id="del-button" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
@@ -87,7 +89,9 @@
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Subtotal</h6>
-                            <h6 id="subtotal" data-value="{{ cart.total_price }}" >${{ cart.total_price }}</h6>
+                            {% with cart_total_price=cart.total_price %}
+                            <h6 id="subtotal" data-value="{{ cart_total_price }}" >${{ cart_total_price }}</h6>
+                            {% endwith %}
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Shipping</h6>
@@ -113,7 +117,8 @@
     <script>
         var removeFromCartUrl = "{% url 'cart:cart_remove' %}";
         var CartTotalPriceUrl = "{% url 'cart:total_price' %}";
+        var cartItemQuantityChangeUrl = "{% url 'cart:item_quantity_change' %}";
         var csrfToken = "{{ csrf_token }}";
     </script>
-    <script src="{% static 'js/ajax/cart_remove.js' %}"></script>
+    <script src="{% static 'js/ajax/cart&order_page.js' %}"></script>
 {% endblock %}

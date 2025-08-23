@@ -13,7 +13,7 @@ def cart_detail_view(request):
 def cart_add_view(request, pk):
     size, color, quantity = request.POST.get('size'), request.POST.get('color'), request.POST.get('quantity')
     cart = Cart(request)
-    cart.add(pk, color, size, quantity)
+    cart.add(pk, color, size, int(quantity))
     cart_quantity = len(request.session.get('cart', {}))
     return JsonResponse({'cart_quantity': cart_quantity})
     # return redirect('cart:cart_detail')
@@ -22,9 +22,9 @@ def cart_add_view(request, pk):
 def cart_remove_view(request):
     uid = request.POST.get('product_id')
     cart = Cart(request)
-    cart.remover(uid)
+    cart.remove(uid)
     cart_quantity = len(request.session.get('cart', {}))
-    return JsonResponse({'cart_quantity': cart_quantity})
+    return JsonResponse({'cart_quantity': cart_quantity, 'total_price': cart.total_price()})
     # return redirect('cart:cart_detail')
 
 
@@ -44,8 +44,20 @@ def cart_total_price(request):
     return JsonResponse({'total_price': cart.total_price()})
 
 
+@require_GET
 def order_detail_view(request):
     form = SelectAddressForm(request.user)
-    return render(request, 'cart/order_detail.html', {'form': form})
+    cart = Cart(request)
+    return render(request, 'cart/order_detail.html', {'form': form, 'cart': cart})
 
 
+@require_POST
+def cart_item_quantity_change_view(request):
+    uid, quantity = request.POST.get('uid'), request.POST.get('quantity')
+    cart = Cart(request)
+    cart.change_quantity(uid, int(quantity))
+    return JsonResponse({
+        'is_in': True,
+        'item_total_price': cart.item_total_price(uid),
+        'total_price': cart.total_price()
+    })

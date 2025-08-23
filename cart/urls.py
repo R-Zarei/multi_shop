@@ -10,4 +10,5 @@ urlpatterns = [
     path('is-in', views.check_cart, name='check_cart'),
     path('order', views.order_detail_view, name='order'),
     path('total_price', views.cart_total_price, name='total_price'),
+    path('item_quantity_change', views.cart_item_quantity_change_view, name='item_quantity_change'),
 ]
