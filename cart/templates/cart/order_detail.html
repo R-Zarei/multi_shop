@@ -39,7 +39,7 @@
                         <tr id="product" data-product-id="{{ product.unique_id }}">
                             <td class="align-middle"><img src="{{ product.product.image.url }}" alt="image"
                                                           style="width: 50px;"><a
-                                    href="{% url 'product:product_detail' product.product_id %}">{{ product.product.title }}</a>
+                                    href="{{ product.product.get_absolut_url }}">{{ product.product.title }}</a>
                             </td>
                             <td class="align-middle">{{ product.size }}</td>
                             <td class="align-middle">{{ product.color }}</td>
