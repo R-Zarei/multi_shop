@@ -18,10 +18,12 @@ class Cart:
 
         for item in cart_items.values():
             product = products.get(item['product_id'])
-            item['product'] = product
-            item['total'] = int(product.price) * int(item.get('quantity', 0))
-            item['unique_id'] = f"{item['product_id']}-{item['color']}-{item['size']}"
-            yield item
+            yield {
+                **item, # add all key value in item dict.
+                'product': product,
+                'total': int(product.price) * int(item.get('quantity', 0)),
+                'unique_id': f"{item['product_id']}-{item['color']}-{item['size']}"
+            }
 
     def add(self, pk: int, color: str, size: str, quantity: int) -> None:
         if quantity <= 0:
@@ -36,6 +38,10 @@ class Cart:
                 'size': size,
                 'quantity': int(quantity)
             }
+        self.save()
+
+    def clean_all(self) -> None:
+        del self.session[cart_session_id]
         self.save()
 
     def remove(self, uid: str):

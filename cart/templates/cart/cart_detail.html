@@ -103,7 +103,7 @@
                             <h5>Total</h5>
                             <h5 id="total-price">$</h5>
                         </div>
-                        <a href="{% url 'cart:order' %}">
+                        <a href="{% url 'cart:checkout' %}">
                             <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout
                             </button>
                         </a>
@@ -121,5 +121,5 @@
         var cartItemQuantityChangeUrl = "{% url 'cart:item_quantity_change' %}";
         var csrfToken = "{{ csrf_token }}";
     </script>
-    <script src="{% static 'js/ajax/cart&order_page.js' %}"></script>
+    <script src="{% static 'js/ajax/cart&checkout_page.js' %}"></script>
 {% endblock %}

@@ -111,11 +111,51 @@ $(document).ready(function () {
         });
     }
 
+    // send discount_code
+    function SendDiscountCode() {
+        $("#discount_code_form").submit(function(e) {
+            e.preventDefault();  // Prevent the default form submission.
+            let data = $(this).serialize();
+            let url = $(this).attr('action');
+            let submitBtn = $(this).find("button");
+            submitBtn.prop("disabled", true);  // disable submit button.
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data,
+                headers: {
+                    "X-CSRFToken": csrfToken
+                },
+                success: function(response) {
+                    ChangeTotal(response.new_price)
+                    console.log(response.new_price);
+                },
+                error: function (jqXHR, textStatus, errorTheron) {
+                    // Handel error
+                    console.error("Error: ", textStatus, errorTheron);
+                    // jqXHR provides details about the error, including status code and responseText
+                    console.log("Status Code: ", jqXHR.status);
+                    console.log("Response Text: ", jqXHR.responseText);
+                    // Display an error message to user
+                    let emsg = JSON.parse(jqXHR.responseText).error.discount_code[0];
+                    alert(emsg);
+                },
+                 complete: function () {
+                     submitBtn.prop("disabled", false);  // enable submit button.
+                 }
+            });
+        });
+    }
+
 
     // calling functions
     TotalPriceCalculator($("#subtotal").data("value"), 10, 'total-price');
 
     // calling function
     ChangeCartItemQuantity();
+
+    // calling function
+    SendDiscountCode();
 
 });

@@ -1,8 +1,11 @@
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from cart.cart_module import Cart
-from .forms import SelectAddressForm
+from .forms import SelectAddressForm, DiscountCodeForm
+from .models import Order, OrderItem, DiscountCode
 from django.views.decorators.http import require_POST, require_GET
+from django.contrib.auth import decorators
 
 
 def cart_detail_view(request):
@@ -45,10 +48,54 @@ def cart_total_price(request):
 
 
 @require_GET
-def order_detail_view(request):
-    form = SelectAddressForm(request.user)
+def checkout_view(request):
+    address_form = SelectAddressForm(request.user)
+    discount_form = DiscountCodeForm(request.user)
     cart = Cart(request)
-    return render(request, 'cart/order_detail.html', {'form': form, 'cart': cart})
+
+    # delete discount_code from session
+    session = request.session
+    session.pop('discount_code', None)
+    session.modified = True
+
+    return render(request, 'cart/checkout.html',
+                  {'address_form': address_form, 'discount_form': discount_form, 'cart': cart})
+
+
+@decorators.login_required(login_url='/account/login')
+@require_POST
+def order_creation_view(request):
+    form = SelectAddressForm(request.user, request.POST)
+    if form.is_valid():
+        user = request.user
+        cart = Cart(request)
+        with transaction.atomic():
+            order = Order.objects.create(
+                user=user,
+                address=form.cleaned_data.get('address_choice'),
+                total_price=cart.total_price(),
+            )
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    size=item['size'],
+                    color=item['color'],
+                    quantity=item['quantity'],
+                    price=item['product'].price
+                )
+            cart.clean_all()
+
+@decorators.login_required(login_url='/account/login')
+@require_POST
+def discount_code_view(request):
+    form = DiscountCodeForm(request.user, request.POST, )
+    if form.is_valid():
+        discount = form.cleaned_data.get('discount_code')
+        cart_total_price = Cart(request).total_price()
+        request.session['discount_code'] = discount.percentage
+        return JsonResponse({'new_price': f"{cart_total_price - (cart_total_price * discount.percentage / 100):.2f}"})
+    return JsonResponse({'error': form.errors}, status=400)
 
 
 @require_POST
