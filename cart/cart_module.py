@@ -72,5 +72,8 @@ class Cart:
                 total += product_price * item.get('quantity', 0)
         return total
 
+    def is_empty(self):
+        return not bool(self.cart)
+
     def save(self):
         self.session.modified = True

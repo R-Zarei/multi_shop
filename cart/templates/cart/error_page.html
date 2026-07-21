@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Error{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12 text-center mt-5">
+            <!-- error picture -->
+            <img src="{% static 'gif/Error.gif' %}" alt="Payment Error"
+                 style="max-width: 300px;" class="mb-4">
+
+            <!-- error message -->
+            <h2 class="text-danger font-weight-bold">Payment Failed!</h2>
+            <p class="lead text-muted mb-4">
+                Unfortunately, your payment could not be processed at this time.<br>
+                This might be due to a connection issue or a problem with the payment gateway.
+            </p>
+            <p class="lead text-muted mb-4">Error Code: {{ error_code }}</p>
+            <p class="lead text-muted mb-4">Error message: {{ error_message }}</p>
+            <!-- buttons -->
+            <div class="d-flex justify-content-center gap-3">
+{#                <a href="{% url 'cart:checkout' %}" class="btn btn-primary px-4 py-2 mr-2">#}
+{#                    Try Again#}
+{#                </a>#}
+                <a href="{% url 'cart:cart_detail' %}" class="btn btn-primary px-4 py-2 mr-2">
+                    Back to Cart
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

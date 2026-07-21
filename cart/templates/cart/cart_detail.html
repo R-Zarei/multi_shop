@@ -104,7 +104,9 @@
                             <h5 id="total-price">$</h5>
                         </div>
                         <a href="{% url 'cart:checkout' %}">
-                            <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout
+                            <button class="btn btn-block btn-primary font-weight-bold my-3 py-3"
+                            {% if cart.is_empty %}disabled{% endif %}>
+                                Proceed To Checkout
                             </button>
                         </a>
                     </div>

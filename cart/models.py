@@ -11,6 +11,10 @@ class Order(models.Model):
     is_paid = models.BooleanField(default=False)
     date_ordered = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    EXPIRATION_HOURS = 1
+
+    def is_expired(self):
+        return (not self.is_paid) and timezone.now() > timezone.now() + timedelta(hours=self.EXPIRATION_HOURS)
 
     def __str__(self):
         return f'{self.user}'
@@ -43,6 +47,7 @@ class DiscountCode(models.Model):
 class DiscountCodeUsage(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     discount = models.ForeignKey(DiscountCode, on_delete=models.CASCADE)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, null=True, related_name="discount_code_usage")
     used_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -44,7 +44,7 @@
                     <h3>{{ product.title }}</h3>
                     <h3 class="font-weight-semi-bold mb-4">${{ product.price }}</h3>
                     <p class="mb-4">{{ product.description|slice:":150" }}</p>
-                    <form id="add-to-cart-form" action="{% url 'cart:cart_add' product.id %}" method="post">
+                    <form id="add-to-cart-form" action="{% url 'cart:cart_add' product.external_id %}" method="post">
                         {% csrf_token %}
 
                         <div class="d-flex mb-3">

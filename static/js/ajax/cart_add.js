@@ -3,8 +3,9 @@ $(document).ready(function() {
     // Add and remove the product from the cart, and change submit button.
     $("#add-to-cart-form").submit(function(event) {
         event.preventDefault();  // Prevent the default form submission
-
-        var submit_button_name = $("#submit-button").attr("name")
+        let submitBtn = $("#submit-button");
+        submitBtn.prop("disabled", true); // disable submit button.
+        let submit_button_name = submitBtn.attr("name")
         if (submit_button_name === "add-to-cart-button") {
             var actionUrl = $(this).attr("action"); // Get the form action URL
             var formData = $(this).serialize(); // Collect form data
@@ -27,8 +28,14 @@ $(document).ready(function() {
                     button.attr("name", "del-form-cart-button");
                 },
                 error: function (xhr, status, error) {
-                    alert("Error adding product to the cart!"); // Show error message
-                }
+                    if (xhr.status === 400) {
+                        const data = JSON.parse(xhr.responseText);
+                        alert(data.error);
+                    }
+                    else {
+                        alert("Error adding product to the cart!"); // Show error message
+                    }
+                },
             });
         }
         else {
@@ -52,9 +59,11 @@ $(document).ready(function() {
                     button.blur();
                     button.html('<i id="submit-icon" class="fa fa-shopping-cart mr-1"></i> Add To Cart');
                     button.attr("name", "add-to-cart-button");
-                }
+                },
+                error: function () {},
             });
         }
+        submitBtn.prop("disabled", false); // enable submit button.
     });
 
     // Calling the checkProduct function by refreshing page
@@ -102,5 +111,4 @@ $(document).ready(function() {
             }
         });
     }
-
 });
