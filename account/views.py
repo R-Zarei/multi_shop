@@ -4,6 +4,7 @@ from .forms import (UserLoginForm, UserRegistrationForm, OtpForm, LoginWithOtpFo
                     AddressForm)
 from django.contrib.auth import login, logout, decorators
 from .models import User, City, Address
+from cart.models import Order, OrderItem, Product
 from kavenegar import KavenegarAPI
 from random import randint
 from django.urls import reverse
@@ -52,6 +53,7 @@ def user_login_with_opt(request):
     return render(request, 'account/login.html', {'form': form})
 
 
+@decorators.login_required(login_url='/account/login')
 def user_logout(request):
     logout(request)
     return redirect('/')
@@ -128,7 +130,7 @@ if request.method == 'POST':
 '''
 
 
-@decorators.login_required
+@decorators.login_required(login_url='/account/login')
 def edit_profile(request):
     user = request.user
     if request.method == 'POST':
@@ -141,7 +143,7 @@ def edit_profile(request):
     return render(request, 'account/user_profile.html', {'form': form})
 
 
-@decorators.login_required
+@decorators.login_required(login_url='/account/login')
 def change_password(request):
     user = request.user
     if request.method == 'POST':
@@ -155,7 +157,7 @@ def change_password(request):
     return render(request, 'account/change_password.html', {'form': form})
 
 
-@decorators.login_required
+@decorators.login_required(login_url='/account/login')
 def user_address(request):
     if request.method == "POST":
         form = AddressForm(request.POST)
@@ -186,7 +188,7 @@ def user_address(request):
         return render(request, 'account/user_address.html', {"form": form, "addresses": addresses})
 
 
-@decorators.login_required
+@decorators.login_required(login_url='/account/login')
 @require_GET
 def lode_city(request):
     province_id = request.GET.get("province_id")
@@ -208,7 +210,7 @@ def remove_address(request):
         return JsonResponse({"success": False})
 
 
-@decorators.login_required
+@decorators.login_required(login_url='/account/login')
 @require_POST
 def edit_address(request):
     try:
@@ -236,3 +238,9 @@ def edit_address(request):
 
     except ModuleNotFoundError:
         return JsonResponse({"success": False})
+
+
+@decorators.login_required(login_url='/account/login')
+def user_orders(request):
+    orders =  Order.objects.filter(user=request.user)
+    return render(request, 'account/orders.html', {"orders": orders})

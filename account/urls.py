@@ -15,4 +15,5 @@ urlpatterns = [
     path('address/load_city', views.lode_city, name="lode_city"),
     path('remove_address', views.remove_address, name='remove_address'),
     path('edit_address', views.edit_address, name='edit_address'),
+    path('orders',views.user_orders , name='orders'),
 ]

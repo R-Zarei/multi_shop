@@ -28,6 +28,7 @@ def cart_add_view(request, external_id):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
+@require_POST
 def cart_remove_view(request):
     uid = request.POST.get('product_id')
     cart = Cart(request)
@@ -54,6 +55,7 @@ def cart_total_price(request):
 
 
 @require_GET
+@decorators.login_required(login_url='/account/login')
 def checkout_view(request):
     cart = Cart(request)
     if cart.is_empty():
@@ -77,12 +79,31 @@ def order_creation(request):
         form = SelectAddressForm(user, request.POST)
         if form.is_valid():
             cart = Cart(request)
+            total_price = cart.total_price()
+            session = request.session
+            discount_code_id = session.get('discount_code')
+            session.pop('discount_code', None)  # delete discount_code from session
+            session.modified = True
+
             with transaction.atomic():
+                # check and apply discount code.
+                if discount_code_id:
+                    discount = DiscountCode.objects.filter(id=discount_code_id).first()
+                else:
+                    discount = None
+                if discount is not None:
+                    final_total_price = total_price - (total_price * discount.percentage / 100)
+                else:
+                    final_total_price = total_price
+                # creat order.
                 order = Order.objects.create(
                     user=user,
                     address=form.cleaned_data.get('address_choice'),
-                    total_price=cart.total_price(),
+                    total_price=total_price,
+                    discount_code=discount,
+                    final_total_price=final_total_price
                 )
+                # create order items.
                 for item in cart:
                     size = None
                     if item['size']:
@@ -95,7 +116,7 @@ def order_creation(request):
                         quantity=item['quantity'],
                         price=item['product'].price
                     )
-                cart.clean_all()
+                # cart.clean_all()
             return order
         return False
     except Exception as e:
@@ -111,20 +132,15 @@ pay = ZarinPal(merchant='a0640e64-c74f-4c36-a26a-63e291ab8b39', call_back_url='h
 def send_pay_request_view(request):
     order = order_creation(request)
     if order:
-        # check and apply discount code.
-        amount = order.total_price
-        discount_code_id = request.session.get('discount_code')
-        if discount_code_id:
-            discount = get_object_or_404(DiscountCode, id=discount_code_id)
-            amount -= (amount * discount.percentage / 100)
-
-        response = pay.send_request(amount=str(int(amount)), description='Payment for shopping from multi-shop',
+        amount = int(order.final_total_price)
+        response = pay.send_request(amount=str(amount), description='Payment for shopping from multi-shop',
                                     mobile=request.user.phone)
         if response.get('error_code') is None:
             request.session['order_id'] = order.id
             # redirect object
             return response
         else:
+            order.delete()
             return render(request, 'cart/error_page.html',
                           {'error_code': response.get("error_code"), 'error_message': response.get("message")})
     return HttpResponse('order dont carate')
@@ -132,24 +148,19 @@ def send_pay_request_view(request):
 
 def pay_verify(request):
     order = get_object_or_404(Order, id=request.session.get('order_id'))
-    amount = order.total_price
-    discount_code = request.session.get('discount_code')
-    if discount_code:
-        discount_code = get_object_or_404(DiscountCode, id=discount_code)
-        amount -= (amount * discount_code.percentage / 100)
-
     # delete discount_code and order_id from session
     session = request.session
-    session.pop('discount_code', None)
     session.pop('order_id', None)
     session.modified = True
 
-    response = pay.verify(request=request, amount=str(int(amount)))
-
+    response = pay.verify(request=request, amount=str(int(order.final_total_price)))
     if response.get("transaction"):
         if response.get("pay"):
             order.is_paid = True
+            order.status = "processing"
             order.save()
+            Cart(request).clean_all()
+            discount_code = order.discount_code
             if discount_code:
                 DiscountCodeUsage.objects.create(user=request.user, discount=discount_code, order=order)
                 discount_code.quantity = models.F('quantity') - 1
@@ -157,8 +168,10 @@ def pay_verify(request):
             return render(request, 'cart/pay_message_page.html',
                           {'message': f'REF ID: {response.get("RefID")}'})
         else:
+            order.delete()
             return render(request, 'cart/pay_message_page.html',{'message': response.get("message")})
     else:
+        order.delete()
         if response.get("status") == "ok":
             return render(request, 'cart/error_page.html',
                           {'error_code': response.get("error_code"), 'error_message': response.get("message")})
