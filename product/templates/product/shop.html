@@ -192,12 +192,16 @@
                                     </div>
                                 </div>
                                 <div class="text-center py-4">
-                                    <a class="h6 text-decoration-none text-truncate" href="{{ product.get_absolut_url }}">{{ product.title }}</a>
+                                    <a class="h6 text-decoration-none text-truncate" href="{{ product.get_absolute_url }}">{{ product.title }}</a>
                                     <div class="d-flex align-items-center justify-content-center mt-2">
+                                        {% if product.final_price == product.price %}
                                         <h5>${{ product.price }}</h5>
-                                        <h6 class="text-muted ml-2">
-                                            <del>$123.00</del>
-                                        </h6>
+                                        {% else %}
+                                            <h5>${{ product.final_price }}</h5>
+                                            <h6 class="text-muted ml-2">
+                                                <del>${{ product.price }}</del>
+                                            </h6>
+                                        {% endif %}
                                     </div>
 
                                 </div>

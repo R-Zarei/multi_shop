@@ -244,3 +244,9 @@ def edit_address(request):
 def user_orders(request):
     orders =  Order.objects.filter(user=request.user)
     return render(request, 'account/orders.html', {"orders": orders})
+
+
+@decorators.login_required(login_url='/account/login')
+def order_details(request, order_code):
+    order = get_object_or_404(Order, code=order_code)
+    return render(request, 'account/order_details.html', {"order": order})

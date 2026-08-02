@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Details{% endblock %}
+
+{% block body %}
+
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="{% url "home" %}">Home</a>
+                    <a class="breadcrumb-item text-dark" href="{% url "account:orders" %}">My Orders</a>
+                    <span class="breadcrumb-item active">Order Details</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+    <!-- Cart Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-8 table-responsive mb-5">
+                <table class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th></th>
+                        <th>Product</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        {#                        <th>Remove</th>#}
+                    </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                    {% for item in order.items.all %}
+                        <tr id="product" data-product-id="{{ item.product.unique_id }}">
+                            <td class="align-middle">
+                                <img src="{{ item.product.image.url }}" alt="image" style="width: 50px;">
+                            </td>
+                            <td class="align-middle">
+                                <a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a>
+                            </td>
+                            <td class="align-middle">{% if item.size is None %}None{% else %}
+                                {{ item.size }}{% endif %}</td>
+                            <td class="align-middle">{{ item.color.name }}</td>
+                            {#                            <td class="align-middle">${{ item.product.price }}</td>#}
+                            <td>
+                                <div class="d-flex flex-column align-items-center justify-content-center mt-2">
+                                    {% if item.product.final_price == item.product.price %}
+                                        ${{ item.product.price }}
+                                    {% else %}
+                                        ${{ item.product.final_price }}
+                                        <small class="text-muted">
+                                            <del>${{ item.product.price }}</del>
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="align-middle">{{ item.quantity }}</td>
+                            <td class="align-middle">${{ item.total_price }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- سمت راست: باکس جزئیات سفارش -->
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-secondary pr-3">Order Details</span>
+                </h5>
+                <div class="bg-light p-4 mb-3 order-card">
+                    <!-- وضعیت سفارش -->
+                    <div class="mb-2">
+                        {% if order.status == 'processing' %}
+                            <span class="order-status-badge shipped">
+                            <i class="fas fa-truck mr-1"></i>
+                        {% elif order.status == 'delivered' %}
+                            <span class="order-status-badge delivered">
+                            <i class="fas fa-check-circle mr-1"></i>
+                        {% else %}
+                            <span class="order-status-badge cancelled">
+                            <i class="fas fa-times-circle mr-1"></i>
+                        {% endif %}
+                        {{ order.status }}
+                        </span>
+                    </div>
+
+                    <!-- کد سفارش و تاریخ (یک خط) -->
+                    <div class="d-flex flex-wrap align-items-center order-meta mb-2">
+                        <span class="mr-3">
+                            <i class="fas fa-hashtag text-primary mr-1"></i> {{ order.code }}
+                        </span>
+                        <span>
+                            <i class="far fa-calendar-alt text-primary mr-1"></i> {{ order.date_ordered|date:"d/m/Y" }}
+                        </span>
+                    </div>
+
+                    <!-- قیمت محصول (با خط خورده و تخفیف) -->
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Price</span>
+                        <div>
+                            <span class="text-muted mr-2" style="text-decoration: line-through;">$253.00</span>
+                            <span class="font-weight-bold">$199.00</span>
+                        </div>
+                    </div>
+
+                    <!-- هزینه ارسال -->
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping</span>
+                        <span>$10.00</span>
+                    </div>
+
+                    <!-- کد تخفیف -->
+                    <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
+                        <span>Discount</span>
+                        <span class="text-success">- $54.00 (21%)</span>
+                    </div>
+
+                    <!-- جمع کل -->
+                    <div class="d-flex justify-content-between mb-3 pt-2">
+                        <h6 class="font-weight-bold">Total</h6>
+                        <h6 class="font-weight-bold">{{ order.final_total_price }}</h6>
+                    </div>
+
+                    <!-- آدرس تحویل -->
+                    <div class="mb-3">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-map-marker-alt text-primary mr-2 mt-1"></i>
+                            <div>
+                                <h6 class="font-weight-semi-bold mb-0">Delivery Address</h6>
+                                <p class="mb-0 text-muted small">
+                                    {{ order.address.province.name }}, {{ order.address.city.name }},
+                                    {{ order.address.address }}, Zip code: {{ order.address.zipcode }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% if order.status == "processing" %}
+                        <!-- دکمه کنسل کردن سفارش -->
+                        <div class="border-top pt-3">
+                            <button type="button" class="btn btn-danger font-weight-bold py-2 px-4"
+                                    style="width: 100%;" data-toggle="modal" data-target="#cancelModal">
+                                <i class="fas fa-times-circle mr-2"></i> Cancel Order
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Order Details End -->
+
+    <!-- Modal (باکس تایید کنسل کردن - بدون دکمه ضربدر) -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog"
+         aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+                    <h5 class="modal-title" id="cancelModalLabel">
+                        <i class="fas fa-exclamation-triangle text-danger mr-2"></i>Cancel Order
+                    </h5>
+                    <!-- دکمه ضربدر حذف شد -->
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Are you sure you want to cancel this order?</p>
+                    <p class="text-muted small mt-1">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding-top: 0;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes, Cancel Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript برای مودال -->
+    <script>
+        $(document).ready(function () {
+            $('#confirmCancelBtn').click(function () {
+                alert('Order cancelled successfully!');
+                $('#cancelModal').modal('hide');
+            });
+        });
+    </script>
+
+{% endblock %}

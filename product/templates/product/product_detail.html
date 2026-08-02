@@ -10,8 +10,8 @@
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
+                    <a class="breadcrumb-item text-dark" href="{% url 'home' %}">Home</a>
+                    <a class="breadcrumb-item text-dark" href="{% url 'product:product_list' %}">Shop</a>
                     <span class="breadcrumb-item active">Shop Detail</span>
                 </nav>
             </div>
@@ -42,7 +42,17 @@
             <div class="col-lg-7 h-auto mb-30">
                 <div class="h-100 bg-light p-30">
                     <h3>{{ product.title }}</h3>
-                    <h3 class="font-weight-semi-bold mb-4">${{ product.price }}</h3>
+                    {#                    <h3 class="font-weight-semi-bold mb-4">${{ product.price }}</h3>#}
+                    <div class="d-flex align-items-center mt-2">
+                        {% if product.final_price == product.price %}
+                            <h3>${{ product.price }}</h3>
+                        {% else %}
+                            <h3>${{ product.final_price }}</h3>
+                            <h5 class="text-muted ml-2">
+                                <del>${{ product.price }}</del>
+                            </h5>
+                        {% endif %}
+                    </div>
                     <p class="mb-4">{{ product.description|slice:":150" }}</p>
                     <form id="add-to-cart-form" action="{% url 'cart:cart_add' product.external_id %}" method="post">
                         {% csrf_token %}
@@ -86,7 +96,8 @@
                                     </button>
                                 </div>
                             </div>
-                            <button name="add-to-cart-button" id="submit-button" type="submit" class="btn btn-primary px-3">
+                            <button name="add-to-cart-button" id="submit-button" type="submit"
+                                    class="btn btn-primary px-3">
                                 <i id="submit-icon" class="fa fa-shopping-cart mr-1"></i>
                                 Add To Cart
                             </button>

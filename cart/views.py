@@ -114,7 +114,8 @@ def order_creation(request):
                         size=size,
                         color=Color.objects.get(name=item['color']),
                         quantity=item['quantity'],
-                        price=item['product'].price
+                        price=item['product'].price,
+                        discount=item['product'].discount
                     )
                 # cart.clean_all()
             return order

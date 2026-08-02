@@ -103,3 +103,71 @@ body.fixed {
     background: #f8d7da;
     color: #721c24;
 }
+
+
+/* ============================================
+   استایل‌های جدید برای صفحه جزئیات سفارش
+   ============================================ */
+
+/* ---------- مودال (پس‌زمینه تیره) ---------- */
+/*.modal-backdrop {*/
+/*    opacity: 0.7 !important;*/
+/*}*/
+
+/* ---------- کارت جزئیات سفارش (سمت راست) ---------- */
+.order-detail-card {
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.order-detail-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+/* ---------- قیمت با خط خورده ---------- */
+.price-strikethrough {
+    text-decoration: line-through;
+    color: #6c757d;
+    margin-right: 0.5rem;
+}
+
+/* ---------- متن تخفیف ---------- */
+.discount-text {
+    color: #28a745;
+    font-weight: 500;
+}
+
+/* ---------- آیکون آدرس ---------- */
+.address-icon {
+    margin-top: 3px;
+}
+
+/* ---------- دکمه کنسل کردن ---------- */
+.btn-cancel-order {
+    width: 100%;
+    padding: 0.7rem 1.5rem;
+    font-weight: 700;
+}
+
+/* ---------- واکنش‌گرا برای موبایل ---------- */
+@media (max-width: 768px) {
+    .order-detail-card {
+        margin-top: 2rem;
+    }
+}
+
+/* ---------- مودال (وسط صفحه و پس‌زمینه تیره) ---------- */
+.modal-backdrop {
+    opacity: 0.7 !important;
+}
+
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+}
+
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}

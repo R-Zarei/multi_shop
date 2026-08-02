@@ -16,4 +16,5 @@ urlpatterns = [
     path('remove_address', views.remove_address, name='remove_address'),
     path('edit_address', views.edit_address, name='edit_address'),
     path('orders',views.user_orders , name='orders'),
+    path('orders/<str:order_code>', views.order_details, name='order_details'),
 ]

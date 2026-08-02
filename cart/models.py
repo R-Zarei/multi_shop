@@ -1,8 +1,9 @@
 from django.db import models
 from account.models import User, Address
-from product.models import Product, Size, Color
+from product.models import Product, Size, Color, Discount
 from django.utils import timezone
 from datetime import timedelta
+from django.urls import reverse
 import random
 
 
@@ -59,6 +60,9 @@ class Order(models.Model):
     def is_expired(self):
         return (not self.is_paid) and timezone.now() > self.date_ordered + timedelta(hours=self.EXPIRATION_HOURS)
 
+    def get_absolute_url(self):
+        return reverse("account:order_details", kwargs={"order_code": self.code})
+
     def __str__(self):
         return f'{self.user}'
 
@@ -74,7 +78,15 @@ class OrderItem(models.Model):
     size = models.ForeignKey(Size, on_delete=models.CASCADE, related_name='items', null=True, blank=True)
     color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='items')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount = models.ForeignKey(Discount, on_delete=models.CASCADE, null=True, blank=True, related_name='order_items')
     quantity = models.PositiveSmallIntegerField(default=1)
+
+    @property
+    def total_price(self):
+        price = self.price
+        if self.discount:
+            price = self.price - (self.price * self.discount.percentage / 100)
+        return price * self.quantity
 
 
 class DiscountCodeUsage(models.Model):

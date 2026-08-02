@@ -21,7 +21,7 @@ class Cart:
             yield {
                 **item, # add all key value in item dict.
                 'product': product,
-                'total': int(product.price) * int(item.get('quantity', 0)),
+                'total': int(product.final_price) * int(item.get('quantity', 0)),
                 'unique_id': f"{item['product_id']}-{item['color']}-{item['size']}"
             }
 
@@ -59,12 +59,12 @@ class Cart:
         if item is None:
             return 0
         product = Product.objects.get(id=item['product_id'])
-        return product.price * item.get('quantity', 0)
+        return product.final_price * item.get('quantity', 0)
 
     # @property
     def total_price(self):
         product_ids = [item['product_id'] for item in self.cart.values()]
-        product_prices = {p.id: p.price for p in Product.objects.filter(id__in=product_ids)}
+        product_prices = {p.id: p.final_price for p in Product.objects.filter(id__in=product_ids)}
         total = 0
         for item in self.cart.values():
             product_price = product_prices.get(item['product_id'])

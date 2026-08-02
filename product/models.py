@@ -2,6 +2,9 @@ import uuid
 from django.db import models
 from django.utils.text import slugify
 from django.urls import reverse
+from django.utils import timezone
+from decimal import Decimal
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class Size(models.Model):
@@ -20,7 +23,13 @@ class Color(models.Model):
 
 class Discount(models.Model):
     title = models.CharField(max_length=50)
-    percentage = models.SmallIntegerField()
+    percentage = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(100)])
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+    @property
+    def is_active(self):
+        return self.start_date <= timezone.localdate() <= self.end_date
 
     def __str__(self):
         return self.title
@@ -40,16 +49,22 @@ class Product(models.Model):
     slug = models.SlugField(blank=True)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount = models.ManyToManyField(Discount, related_name='products', blank=True)
+    discount = models.ForeignKey(Discount, related_name='products', blank=True, null=True, on_delete=models.SET_NULL)
     image = models.ImageField(upload_to='product')
     size = models.ManyToManyField(Size, related_name='products', blank=True)
     color = models.ManyToManyField(Color, related_name='products')
+
+    @property
+    def final_price(self):
+        if self.discount and self.discount.is_active:
+            return self.price - (self.price * Decimal(self.discount.percentage) / Decimal("100"))
+        return self.price
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-    def get_absolut_url(self):
+    def get_absolute_url(self):
         return reverse('product:product_detail', kwargs={'external_id': self.external_id ,'slug': self.slug})
 
     def __str__(self):
