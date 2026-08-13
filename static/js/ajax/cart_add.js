@@ -1,6 +1,7 @@
+// this script use in products details page for add/remove products form cart.
 $(document).ready(function() {
 
-    // Add and remove the product from the cart, and change submit button.
+    // Adding or removing the product from the cart, and updating submit button.
     $("#add-to-cart-form").submit(function(event) {
         event.preventDefault();  // Prevent the default form submission
         let submitBtn = $("#submit-button");
@@ -74,7 +75,7 @@ $(document).ready(function() {
        checkProduct();
     });
 
-    // Check the product in the cart and change submit button
+    // Checking that the product in the cart and change submit button.
     function checkProduct() {
         var color = $('input[name="color"]:checked').val();
         var size = $('input[name="size"]:checked').val();

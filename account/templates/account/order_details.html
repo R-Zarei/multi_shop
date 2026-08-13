@@ -103,12 +103,33 @@
 
                     <!-- قیمت محصول (با خط خورده و تخفیف) -->
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Price</span>
+                        <span>Subtotal Price</span>
                         <div>
-                            <span class="text-muted mr-2" style="text-decoration: line-through;">$253.00</span>
-                            <span class="font-weight-bold">$199.00</span>
+                            {% if has_products_discount or order.discount_code %}
+                                <span class="text-muted mr-2"
+                                      style="text-decoration: line-through;">${{ products_amount }}</span>
+                            {% else %}
+                                <span class="font-weight-bold">${{ products_amount }}</span>
+                            {% endif %}
                         </div>
                     </div>
+                    {% if has_products_discount %}
+                        <!-- product discount -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Product Discount</span>
+                            <span class="text-success">- ${{ total_discount_amount }} ({{ total_products_discount_percent }}%)</span>
+                        </div>
+
+                        <!-- order total price with product discount -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>After Product Discount</span>
+                            <div>
+                                <span class="font-weight-bold">${{ products_with_discount_amount }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between mb-2 pb-2"></div>
 
                     <!-- هزینه ارسال -->
                     <div class="d-flex justify-content-between mb-2">
@@ -116,11 +137,15 @@
                         <span>$10.00</span>
                     </div>
 
-                    <!-- کد تخفیف -->
-                    <div class="d-flex justify-content-between mb-2 border-bottom pb-2">
-                        <span>Discount</span>
-                        <span class="text-success">- $54.00 (21%)</span>
-                    </div>
+                    {% if order.discount_code %}
+                        <!-- کد تخفیف -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Discount Code</span>
+                            <span class="text-success">- ${{ order_discount_code_price }} ({{ order.discount_code.percentage }}%)</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between mb-2 border-bottom pb-2"></div>
 
                     <!-- جمع کل -->
                     <div class="d-flex justify-content-between mb-3 pt-2">

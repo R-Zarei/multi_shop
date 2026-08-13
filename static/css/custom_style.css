@@ -171,3 +171,92 @@ body.fixed {
     border-radius: 12px;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
+
+
+/* ====== استایل‌های دکمه‌های ادیت و دیلیت ====== */
+
+/* دکمه ادیت با رنگ زرد تم (گوشه تخت) */
+.custom-btn-warning {
+    background-color: #FFD333 !important;
+    border-color: #FFD333 !important;
+    color: #1C1C1C !important;
+    border-radius: 0 !important;
+}
+.custom-btn-warning:hover {
+    background-color: #e6c200 !important;
+    border-color: #e6c200 !important;
+}
+
+/* دکمه دیلیت با رنگ قرمز (گوشه تخت) */
+.custom-btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    border-radius: 0 !important;
+    color: #fff !important;
+}
+.custom-btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+/* دکمه ثانویه (گوشه تخت) */
+.custom-btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    border-radius: 0 !important;
+    color: #fff !important;
+    padding: 6px 25px;
+    font-size: 13px;
+}
+.custom-btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+}
+
+/* دکمه‌های کوچکتر */
+.btn-sm {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+/* ====== استایل‌های مودال ====== */
+
+/* حذف گردی مودال */
+.custom-modal-content {
+    border-radius: 0 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    padding: 10px 0;
+}
+
+.custom-modal-body {
+    padding: 20px 25px;
+}
+
+.custom-modal-icon {
+    font-size: 40px;
+    color: #dc3545;
+    margin-bottom: 10px;
+}
+
+.custom-modal-title {
+    font-weight: 500;
+    color: #1C1C1C;
+    margin-bottom: 5px;
+}
+
+.custom-modal-text {
+    color: #6c757d;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+/* سایز مودال */
+.modal-dialog.modal-sm {
+    max-width: 380px;
+}
+
+/* تیره‌تر شدن پس‌زمینه مودال */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.7) !important;
+}

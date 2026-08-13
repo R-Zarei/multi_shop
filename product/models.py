@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from decimal import Decimal
 from django.core.validators import MaxValueValidator, MinValueValidator
+from account.models import User
 
 
 class Size(models.Model):
@@ -70,3 +71,14 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.pk} - {self.title}'
 
+
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete= models.CASCADE, related_name='comments')
+    text = models.TextField(max_length=500)
+    date_added = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    is_visible = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.pk} - {self.product} - {self.user}'

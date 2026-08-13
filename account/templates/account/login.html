@@ -32,6 +32,7 @@
                     {% endfor %}
                     <form method="post">
                         {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
                         <div class="control-group">
                             {% for error in form.phone.errors %}
                                 <div class="alert alert-danger">{{ error }}</div>
@@ -52,12 +53,14 @@
 
                             <div>
                                 <button class="btn btn-primary py-2 px-4" type="submit" id="Login">Login</button>
-                                <a href="{% url 'account:login_with_opt' %}" style="margin-left: 15px; font-size: 14px">Login with otp</a>
+                                <a href="{% url 'account:login_with_opt' %}" style="margin-left: 15px; font-size: 14px">Login
+                                    with otp</a>
                             </div>
                         {% else %}
                             <div>
                                 <button class="btn btn-primary py-2 px-4" type="submit" id="Login">Send</button>
-                                <a href="{% url 'account:login' %}" style="margin-left: 15px; font-size: 14px">Login with password</a>
+                                <a href="{% url 'account:login' %}" style="margin-left: 15px; font-size: 14px">Login
+                                    with password</a>
                             </div>
                         {% endif %}
                     </form>

@@ -64,8 +64,14 @@ $(document).ready(function () {
     //     });
     // }
 
-    function ChangeTotal(newPrice) {
-        $("#subtotal").text(newPrice);
+    // Change subtotall price.
+    function ChangeTotal(newPrice, showOldPrice=false) {
+        let subTotalTag = $("#subtotal")
+        let oldPrice = subTotalTag.text();
+        subTotalTag.text(newPrice);
+        if (showOldPrice) {
+            subTotalTag.after(`<h6 class="text-muted ml-2" style="font-size: 14px;"><del>${oldPrice}</del></h6>`);
+        }
         TotalPriceCalculator(newPrice, 10, 'total-price');
     }
 
@@ -111,7 +117,7 @@ $(document).ready(function () {
         });
     }
 
-    // send discount_code
+    // Send discount_code and apply new price in checkout page.
     function SendDiscountCode() {
         $("#discount_code_form").submit(function(e) {
             e.preventDefault();  // Prevent the default form submission.
@@ -128,7 +134,7 @@ $(document).ready(function () {
                     "X-CSRFToken": csrfToken
                 },
                 success: function(response) {
-                    ChangeTotal(response.new_price)
+                    ChangeTotal(response.new_price, true)
                     console.log(response.new_price);
                 },
                 error: function (jqXHR, textStatus, errorTheron) {

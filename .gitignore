@@ -4,6 +4,8 @@ multi_shop_future.txt
 
 .idea
 
+completed_works.txt
+
 # byte code
 __pycache__/
 *.pyc

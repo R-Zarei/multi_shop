@@ -19,6 +19,8 @@ class OrderAdmin(admin.ModelAdmin):
 class DiscountCodeUsageInline(admin.TabularInline):
     model = DiscountCodeUsage
     extra = 0
+    fields = ('user', 'order', 'used_at')
+    readonly_fields = ('user', 'order','used_at')
 
 
 @admin.register(DiscountCode)

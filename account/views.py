@@ -17,12 +17,20 @@ SMS = KavenegarAPI(apikey='484236523838636B4178655269387331566A7932673638786D6C6
 
 def user_login(request):
     if request.user.is_authenticated:
+        next_url = request.GET.get('next')
+        if next_url:
+            return redirect(next_url)
         return redirect('/')
+
     if request.method == 'POST':
         form = UserLoginForm(request.POST)
         if form.is_valid():
             user = User.objects.get(phone=form.cleaned_data['phone'])
             login(request, user)
+
+            next_url = request.POST.get('next')
+            if next_url:
+                return redirect(next_url)
             return redirect('/')
     else:
         form = UserLoginForm()
@@ -249,4 +257,33 @@ def user_orders(request):
 @decorators.login_required(login_url='/account/login')
 def order_details(request, order_code):
     order = get_object_or_404(Order, code=order_code)
-    return render(request, 'account/order_details.html', {"order": order})
+    has_products_discount = False
+    products_with_discount_amount = 0
+    products_amount = 0
+
+    for item in order.items.all():
+        products_amount += item.price * item.quantity
+        products_with_discount_amount += item.total_price
+
+    if products_with_discount_amount != products_amount:
+        has_products_discount = True
+
+    total_discount_amount = products_amount - products_with_discount_amount
+    p_d_precent = float(total_discount_amount / products_amount * 100)  # total products discount precent.
+
+    return render(request, 'account/order_details.html',
+                  {
+                      "order": order,
+
+                      # Product prices
+                      "products_amount": products_amount,   # before discount
+                      "products_with_discount_amount": products_with_discount_amount,  # after product discounts
+
+                      # Product discount info
+                      "has_products_discount": has_products_discount,   # true if any order item has a product discount
+                      "total_discount_amount": total_discount_amount,   # total of product discounts amount
+                      "total_products_discount_percent": f"{p_d_precent:.1f}".rstrip('0').rstrip('.'),
+
+                      # Order discount code
+                      "order_discount_code_price": order.total_price - order.final_total_price,
+                  })

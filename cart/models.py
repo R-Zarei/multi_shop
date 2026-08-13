@@ -64,7 +64,7 @@ class Order(models.Model):
         return reverse("account:order_details", kwargs={"order_code": self.code})
 
     def __str__(self):
-        return f'{self.user}'
+        return f'{self.code}'
 
     def save(self, *args, **kwargs):
         if not self.code:
