@@ -260,3 +260,26 @@ body.fixed {
 .modal-backdrop {
     background-color: rgba(0, 0, 0, 0.7) !important;
 }
+
+/* دکمه علاقه‌مندی‌ها (بی‌رنگ با حاشیه) */
+.custom-btn-favorites {
+    background: transparent !important;
+    border: 1px solid #ddd !important;
+    color: #555 !important;
+    border-radius: 0 !important;
+    transition: all 0.3s ease;
+}
+
+.custom-btn-favorites:hover {
+    background: #f8f8f8 !important;
+    border-color: #ccc !important;
+}
+
+.custom-btn-favorites.active {
+    color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.custom-btn-favorites.active i {
+    font-weight: 900; /* تبدیل به توپر */
+}

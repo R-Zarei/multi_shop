@@ -9,8 +9,8 @@
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <span class="breadcrumb-item active">Contact</span>
+                    <a class="breadcrumb-item text-dark" href="{% url 'home' %}">Home</a>
+                    <span class="breadcrumb-item active">Profile</span>
                 </nav>
             </div>
         </div>
@@ -44,7 +44,7 @@
                         </li>
                         <li class="mb-3 d-flex align-items-center">
                             <i class="fas fa-heart mr-2" style="color: #FFD333;"></i>
-                            <a href="#" class="text-dark">Favorites</a>
+                            <a href="{% url 'account:favorites' %}" class="text-dark">Favorites</a>
                         </li>
                         <li class="mb-3 d-flex align-items-center">
                             <i class="fas fa-box mr-2" style="color: #FFD333;"></i>

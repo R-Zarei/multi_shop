@@ -17,4 +17,8 @@ urlpatterns = [
     path('edit_address', views.edit_address, name='edit_address'),
     path('orders',views.user_orders , name='orders'),
     path('orders/<str:order_code>', views.order_details, name='order_details'),
+    path('favorites/add', views.add_favorite, name='add_favorite'),
+    path('favorites', views.favorite, name='favorites'),
+    path('favorites/remove', views.remove_favorite, name='remove_favorite'),
+    path('favorites/check', views.check_favorite, name='check_favorites'),
 ]

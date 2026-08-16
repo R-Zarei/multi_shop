@@ -39,7 +39,7 @@ def add_comment(request):
         'id': comment.id,
         'text': comment.text,
         'date': comment.last_modified.strftime('%d %b %Y'),
-        'comment_count': product.comments.count(),
+        'comment_count': comment.product.comments.filter(is_visible=True).count(),
     })
 
 

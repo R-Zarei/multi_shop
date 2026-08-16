@@ -1,8 +1,8 @@
 // this script use in products details page for add/remove products form cart.
-$(document).ready(function() {
+$(document).ready(function () {
 
     // Adding or removing the product from the cart, and updating submit button.
-    $("#add-to-cart-form").submit(function(event) {
+    $("#add-to-cart-form").submit(function (event) {
         event.preventDefault();  // Prevent the default form submission
         let submitBtn = $("#submit-button");
         submitBtn.prop("disabled", true); // disable submit button.
@@ -20,7 +20,7 @@ $(document).ready(function() {
                     "X-CSRFToken": csrfToken,
                 },
                 success: function (response) {
-                    $("#cart-num").text(response.cart_quantity); // Assign input value to span
+                    $("#cart-num").text(response.cart_quantity); // Assign new Count of cart items to cart num in navbar
 
                     var button = $("#submit-button");
                     button.attr("class", "btn btn-danger px-3");
@@ -32,14 +32,12 @@ $(document).ready(function() {
                     if (xhr.status === 400) {
                         const data = JSON.parse(xhr.responseText);
                         alert(data.error);
-                    }
-                    else {
+                    } else {
                         alert("Error adding product to the cart!"); // Show error message
                     }
                 },
             });
-        }
-        else {
+        } else {
             var formData = new FormData(this); // Collect form data
             var productId = $("#product-id").val();
             var size = formData.get('size') || 'None';
@@ -50,10 +48,10 @@ $(document).ready(function() {
                     "product_id": productId + "-" + formData.get('color') + "-" + size,
                 },
                 headers: {
-                  "X-CSRFToken": csrfToken,
+                    "X-CSRFToken": csrfToken,
                 },
                 success: function (response) {
-                    $("#cart-num").text(response.cart_quantity);
+                    $("#cart-num").text(response.cart_quantity); // Assign new Count of cart items to cart num in navbar
 
                     var button = $("#submit-button");
                     button.attr("class", "btn btn-primary px-3");
@@ -61,26 +59,24 @@ $(document).ready(function() {
                     button.html('<i id="submit-icon" class="fa fa-shopping-cart mr-1"></i> Add To Cart');
                     button.attr("name", "add-to-cart-button");
                 },
-                error: function () {},
+                error: function () {
+                },
             });
         }
         submitBtn.prop("disabled", false); // enable submit button.
     });
 
-    // Calling the checkProduct function by refreshing page
-    checkProduct();
 
-    // Calling the checkProduct function by changing a radio button
-    $('input[type="radio"]').change(function () {
-       checkProduct();
-    });
 
     // Checking that the product in the cart and change submit button.
     function checkProduct() {
         var color = $('input[name="color"]:checked').val();
         var size = $('input[name="size"]:checked').val();
+        if (!size) {
+            size = 'None';
+        }
         var product_id = $("#product-id").val() + '-' + color + '-' + size;
-        console.log(product_id);
+        // console.log(product_id);
         $.ajax({
             type: 'POST',
             url: $('#checkCartUrl').val(),
@@ -99,8 +95,7 @@ $(document).ready(function() {
                     button.blur();
                     button.html('<i id="submit-icon" class="fa fa-trash mr-1"></i> Remove From Cart');
                     button.attr("name", "del-form-cart-button");
-                }
-                else {
+                } else {
                     button.attr("class", "btn btn-primary px-3");
                     button.blur();
                     button.html('<i id="submit-icon" class="fa fa-shopping-cart mr-1"></i> Add To Cart');
@@ -112,4 +107,87 @@ $(document).ready(function() {
             }
         });
     }
+
+
+    function toggleFavorite() {
+        $(document).on('click', '#favorite-btn', function () {
+            let button = $(this);
+            let action = button.data('action');
+            let url;
+            // let data = {};
+            if (action === 'add') {
+                url = addFavoriteUrl;
+            } else if (action === 'remove') {
+                url = delFavoriteUrl;
+            } else {
+                console.log("Bad action for favorites!");
+                return 0;
+            }
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: {'product_id': $("#product-id-static").val()},
+                headers: {'X-CSRFToken': csrfToken},
+                success: function (response) {
+                    if (response.success) {
+                        if (action === 'add') {
+                            button.addClass('active');
+                            button.html('<i class="fas fa-heart mr-1"></i> Remove From Favorites');
+                            button.data('action', 'remove');
+                        } else if (action === 'remove') {
+                            button.removeClass('active');
+                            button.html('<i class="far fa-heart mr-1"></i> Add To Favorites');
+                            button.data('action', 'add');
+                        }
+                        $("#favorite-num").text(response.favorites_number);
+                    } else {
+                        alert(`Favorite operation failed: ${response.error}`);
+                    }
+                },
+                error: function (response) {
+                    // alert(response.responseJSON.error);
+                    $('#alter-modal-title').text(response.status);
+                    $('#alter-modal-text').text(response.responseJSON.error);
+                    $("#alert-modal").modal('show');
+                },
+            });
+        });
+    }
+
+
+    function checkProductInFavorites() {
+        $.ajax({
+            method: "POST",
+            url: checkFavoritesUrl,
+            data: {'product_id': $("#product-id-static").val()},
+            headers: {'X-CSRFToken': csrfToken},
+            success: function (response) {
+                let button = $("#favorite-btn");
+                if (response.is_in_favorites) {
+                    button.addClass('active');
+                    button.html('<i class="fas fa-heart mr-1"></i> Remove From Favorites');
+                    button.data('action', 'remove');
+                }
+            },
+            error: function (response) {
+                // alert(response.responseJSON.error);
+                $('#alter-modal-title').text(response.status);
+                $('#alter-modal-text').text(response.responseJSON.error);
+                $("#alert-modal").modal('show');
+            },
+        });
+    }
+
+
+    // Calling the checkProduct function by refreshing page
+    checkProduct();
+    // Calling the checkProduct function by changing a radio button
+    $('input[type="radio"]').change(function () {
+        checkProduct();
+    });
+
+    toggleFavorite();
+
+    checkProductInFavorites();
+
 });

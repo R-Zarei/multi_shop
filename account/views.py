@@ -1,9 +1,11 @@
+from operator import setitem
+
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import (UserLoginForm, UserRegistrationForm, OtpForm, LoginWithOtpForm, UserProfileForm, ChangePasswordForm,
                     AddressForm)
 from django.contrib.auth import login, logout, decorators
-from .models import User, City, Address
+from .models import User, City, Address, Favorite
 from cart.models import Order, OrderItem, Product
 from kavenegar import KavenegarAPI
 from random import randint
@@ -13,6 +15,16 @@ from django.views.decorators.http import require_POST, require_GET
 from django.utils.html import escape
 
 SMS = KavenegarAPI(apikey='484236523838636B4178655269387331566A7932673638786D6C6155376B7944554137435A3973424335733D')
+
+
+# move user favorites products from session to Favorite model.
+def move_favorites(request):
+    for product_id in request.session.get('favorites', []):
+        product = Product.objects.filter(id=product_id).first()
+        if product:
+            Favorite.objects.get_or_create(user=request.user, product=product)
+
+    request.session.pop('favorites', None)
 
 
 def user_login(request):
@@ -27,6 +39,7 @@ def user_login(request):
         if form.is_valid():
             user = User.objects.get(phone=form.cleaned_data['phone'])
             login(request, user)
+            move_favorites(request)
 
             next_url = request.POST.get('next')
             if next_url:
@@ -107,6 +120,7 @@ def check_opt(request):
                 user.set_password(user_info['password'])
                 user.save()
             login(request, user)
+            move_favorites(request)
             return redirect('/')
         else:
             form.add_error('code', 'Verification code is invalid')
@@ -180,7 +194,7 @@ def user_address(request):
                 "error": False,
                 "id": address.id,
                 "province": str(address.province),
-                "city":  str(address.city),
+                "city": str(address.city),
                 "addr": escape(address.address),
                 "zipcode": address.zipcode,
             })
@@ -250,7 +264,7 @@ def edit_address(request):
 
 @decorators.login_required(login_url='/account/login')
 def user_orders(request):
-    orders =  Order.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user)
     return render(request, 'account/orders.html', {"orders": orders})
 
 
@@ -276,14 +290,94 @@ def order_details(request, order_code):
                       "order": order,
 
                       # Product prices
-                      "products_amount": products_amount,   # before discount
+                      "products_amount": products_amount,  # before discount
                       "products_with_discount_amount": products_with_discount_amount,  # after product discounts
 
                       # Product discount info
-                      "has_products_discount": has_products_discount,   # true if any order item has a product discount
-                      "total_discount_amount": total_discount_amount,   # total of product discounts amount
+                      "has_products_discount": has_products_discount,  # true if any order item has a product discount
+                      "total_discount_amount": total_discount_amount,  # total of product discounts amount
                       "total_products_discount_percent": f"{p_d_precent:.1f}".rstrip('0').rstrip('.'),
 
                       # Order discount code
                       "order_discount_code_price": order.total_price - order.final_total_price,
                   })
+
+
+@require_POST
+def add_favorite(request):
+    product_id = request.POST.get('product_id')
+    if not product_id:
+        return JsonResponse({"error": 'Product id is required'}, status=400)
+
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.user.is_authenticated:
+        Favorite.objects.get_or_create(user=request.user, product=product)
+        favorites_number = Favorite.objects.filter(user=request.user).count()
+
+    else:
+        favorites = request.session.get('favorites', [])
+        if product_id not in favorites:
+            favorites.append(product_id)
+        request.session['favorites'] = favorites
+        favorites_number = len(favorites)
+
+    return JsonResponse({"success": True, "favorites_number": favorites_number})
+
+
+@require_POST
+def remove_favorite(request):
+    product_id = request.POST.get('product_id')
+    if not product_id:
+        return JsonResponse({"error": 'Product id is required'}, status=400)
+
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.user.is_authenticated:
+        deleted, _ = Favorite.objects.filter(user=request.user, product=product).delete()
+        if not deleted:
+            return JsonResponse({"error": "Favorite not found"}, status=404)
+        favorites_number = Favorite.objects.filter(user=request.user).count()
+
+    else:
+        favorites = request.session.get('favorites', [])
+        if product_id not in favorites:
+            return JsonResponse({"error": 'Not fund'}, status=404)
+        favorites.remove(product_id)
+        request.session['favorites'] = favorites
+        favorites_number = len(favorites)
+
+    return JsonResponse({"success": True, "favorites_number": favorites_number})
+
+
+@require_GET
+def favorite(request):
+    user = request.user
+    if user.is_authenticated:
+        products = Product.objects.filter(favorites__user=request.user)
+    else:
+        favorites = request.session.get('favorites', [])
+        products = Product.objects.filter(id__in=favorites)
+
+    return render(request, 'account/favorites.html', {"products": products})
+
+
+# check product is in user favorites.
+@require_POST
+def check_favorite(request):
+    product_id = request.POST.get('product_id')
+    if not product_id:
+        return JsonResponse({"error": 'Product id is required'}, status=400)
+    product = get_object_or_404(Product, id=product_id)
+
+    user = request.user
+    if user.is_authenticated:
+        if not user.favorites.filter(product=product).exists():
+            return JsonResponse({"is_in_favorites": False})
+
+    else:
+        favorites = request.session.get('favorites', [])
+        if product_id not in favorites:
+            return JsonResponse({"is_in_favorites": False})
+
+    return JsonResponse({"is_in_favorites": True})

@@ -81,6 +81,14 @@
                                 </div>
                             {% endfor %}
                         </div>
+                        <!-- Favorite Button -->
+                        <div class="d-flex align-items-center mb-4 pt-2">
+                            <button id="favorite-btn" data-action="add" type="button"
+                                    class="btn custom-btn-favorites px-3">
+                                <i class="far fa-heart mr-1"></i>
+                                Add To Favorites
+                            </button>
+                        </div>
                         <div class="d-flex align-items-center mb-4 pt-2">
                             <div class="input-group quantity mr-3" style="width: 130px;">
                                 <div class="input-group-btn">
@@ -101,6 +109,7 @@
                                 <i id="submit-icon" class="fa fa-shopping-cart mr-1"></i>
                                 Add To Cart
                             </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -200,10 +209,12 @@
                                         <input type="hidden" name="external_id" value="{{ product.external_id }}">
                                         <div class="form-group">
                                             <label for="comment-message-box">Review *</label>
-                                            <textarea id="comment-message-box" name="text" cols="30" rows="5" class="form-control"></textarea>
+                                            <textarea id="comment-message-box" name="text" cols="30" rows="5"
+                                                      class="form-control"></textarea>
                                         </div>
                                         <div class="form-group mb-0">
-                                            <input id="send-comment-btn" type="submit" value="Leave Your Review" class="btn btn-primary px-3">
+                                            <input id="send-comment-btn" type="submit" value="Leave Your Review"
+                                                   class="btn btn-primary px-3">
                                             <input id="cancel-edit-comment-btn" type="button"
                                                    value="Cancel" class="btn btn-secondary px-3"
                                                    style="color: #414649; display: none;">
@@ -348,7 +359,8 @@
     <!-- Products End -->
 
     <!-- variables -->
-    <input type="hidden" id="product-id" value="{{ product.id }}">
+    <input type="hidden" id="product-id" value="{{ product.id }}">  <!-- This is for cart tasks and will be changed. -->
+    <input type="hidden" id="product-id-static" value="{{ product.id }}">  <!-- This is for favorites tasks. -->
     <input type="hidden" id="checkCartUrl" value="{% url 'cart:check_cart' %}">
 
     <!-- ====== مودال تأیید حذف ====== -->
@@ -396,10 +408,13 @@
         var removeFromCartUrl = "{% url 'cart:cart_remove' %}";
         var deleteCommentUrl = "{% url 'product:delete_comment' %}";
         var editCommentUrl = "{% url 'product:edit_comment' %}";
+        var addFavoriteUrl = "{% url 'account:add_favorite' %}";
+        var delFavoriteUrl = "{% url 'account:remove_favorite' %}";
+        var checkFavoritesUrl = "{% url 'account:check_favorites' %}";
         {#var productId = {{ product.id }};#}
         {#var checkCartUrl = {% url 'cart:check_cart' %};#}
     </script>
-    <script src="{% static 'js/ajax/cart_add.js' %}"></script>
+    <script src="{% static 'js/ajax/cart_favorite_actions.js' %}"></script>
     <script src="{% static 'js/ajax/comment.js' %}"></script>
 
     <!-- ====== اسکریپت برای فعال‌سازی مودال ====== -->

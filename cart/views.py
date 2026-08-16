@@ -38,6 +38,7 @@ def cart_remove_view(request):
     # return redirect('cart:cart_detail')
 
 
+# check product is in cart.
 @require_POST
 def check_cart(request):
     cart = Cart(request)

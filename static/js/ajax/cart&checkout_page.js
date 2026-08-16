@@ -65,7 +65,7 @@ $(document).ready(function () {
     // }
 
     // Change subtotall price.
-    function ChangeTotal(newPrice, showOldPrice=false) {
+    function ChangeTotal(newPrice, showOldPrice = false) {
         let subTotalTag = $("#subtotal")
         let oldPrice = subTotalTag.text();
         subTotalTag.text(newPrice);
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
     // Send discount_code and apply new price in checkout page.
     function SendDiscountCode() {
-        $("#discount_code_form").submit(function(e) {
+        $("#discount_code_form").submit(function (e) {
             e.preventDefault();  // Prevent the default form submission.
             let data = $(this).serialize();
             let url = $(this).attr('action');
@@ -133,7 +133,7 @@ $(document).ready(function () {
                 headers: {
                     "X-CSRFToken": csrfToken
                 },
-                success: function(response) {
+                success: function (response) {
                     ChangeTotal(response.new_price, true)
                     console.log(response.new_price);
                 },
@@ -147,9 +147,9 @@ $(document).ready(function () {
                     let emsg = JSON.parse(jqXHR.responseText).error.discount_code[0];
                     alert(emsg);
                 },
-                 complete: function () {
-                     submitBtn.prop("disabled", false);  // enable submit button.
-                 }
+                complete: function () {
+                    submitBtn.prop("disabled", false);  // enable submit button.
+                }
             });
         });
     }

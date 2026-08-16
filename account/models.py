@@ -96,6 +96,23 @@ class Address(models.Model):
         return f'{self.province}, {self.city}, {self.address}'
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    product = models.ForeignKey('product.Product', on_delete=models.CASCADE, related_name='favorites')
+    added_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'product'],
+                name='unique_user_product_favorite'
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.user}, {self.product}'
+
+
 '''
 class Otp(models.Model):
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
