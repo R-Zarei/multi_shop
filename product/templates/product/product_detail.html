@@ -26,9 +26,11 @@
             <div class="col-lg-5 mb-30">
                 <div id="product-carousel" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner bg-light">
-                        <div class="carousel-item active">
-                            <img class="w-100 h-100" src="{{ product.image.url }}" alt="Image">
-                        </div>
+                        {% for image in product.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <img class="w-100 h-100" src="{{ image.image.url }}" alt="{{ product.title }}">
+                            </div>
+                        {% endfor %}
                     </div>
                     <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
                         <i class="fa fa-2x fa-angle-left text-dark"></i>
@@ -41,8 +43,31 @@
 
             <div class="col-lg-7 h-auto mb-30">
                 <div class="h-100 bg-light p-30">
+                    <!-- ====== brand and logo ====== -->
+                    <div class="d-flex align-items-end mb-2">
+                        {% if product.brand %}
+                            <div class="brand-logo-wrapper" style="width: 45px; height: 45px; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid #dee2e6; background-color: #fff;">
+                                <img src="{{ product.brand.logo.url }}" alt="brand logo" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <a href="{{ product.brand.get_absolute_url }}" class="brand-name-link ml-3" style="text-transform: uppercase; font-size: 1rem; font-weight: 300; color: #f5d943; text-decoration: none; transition: 0.3s; align-self: flex-end;">
+                                {{ product.brand.name }}
+                            </a>
+                            <span style="font-size: 0.95rem; color: #adb5bd; align-self: flex-end; margin: 0 6px;">/</span>
+                            <a href="" class="category-link" style="font-size: 0.95rem; font-weight: 400; color: #f5d943; text-decoration: none; align-self: flex-end; transition: color 0.2s;">
+                                product.category.name
+                            </a>
+                        {% else %}
+                            <a href="#" class="brand-name-link ml-3" style="font-size: 1rem; font-weight: 300; color: #f5d943; text-decoration: none; transition: 0.3s; align-self: flex-end;">
+                               Other Brands
+                            </a>
+                            <span style="font-size: 0.95rem; color: #adb5bd; align-self: flex-end; margin: 0 6px;">/</span>
+                            <a href="" class="category-link" style="font-size: 0.95rem; font-weight: 400; color: #f5d943; text-decoration: none; align-self: flex-end; transition: color 0.2s;">
+                                product.category.name
+                            </a>
+                        {% endif %}
+                    </div>
+
                     <h3>{{ product.title }}</h3>
-                    {#                    <h3 class="font-weight-semi-bold mb-4">${{ product.price }}</h3>#}
                     <div class="d-flex align-items-center mt-2">
                         {% if product.final_price == product.price %}
                             <h3>${{ product.price }}</h3>
@@ -132,7 +157,7 @@
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
                         <h4 class="mb-3">Additional Information</h4>
-                        <p>dis</p>
+                        <p>info...</p>
                         {% with product.information.all|halve_list as half %}
                             <div class="row">
                                 <div class="col-md-6">

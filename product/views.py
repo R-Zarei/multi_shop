@@ -4,7 +4,7 @@ from django.template.defaultfilters import title
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Product, Comment
+from .models import Product, Comment, Brand
 
 
 def product_detail(request, external_id, slug):
@@ -94,3 +94,10 @@ def edit_comment(request):
         'last_modified': comment.last_modified.strftime('%d %b %Y'),
         'text': comment.text,
     })
+
+
+
+def brand_product_list(request, slug):
+    brand = get_object_or_404(Brand, slug=slug)
+    products = Product.objects.filter(brand=brand)
+    return render(request, 'product/brsnd_products_list.html', {'brand': brand, 'products': products})

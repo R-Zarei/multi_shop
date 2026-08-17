@@ -2,15 +2,20 @@ from django.contrib import admin
 from . import models
 
 
-class InformationAdmin(admin.StackedInline):
+class InformationInLine(admin.StackedInline):
     model = models.Information
+    extra = 0
+
+
+class ImageInLine(admin.StackedInline):
+    model = models.ProductImage
     extra = 0
 
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'price')
-    inlines = [InformationAdmin]
+    inlines = [ImageInLine, InformationInLine]
 
 
 @admin.register(models.Comment)
@@ -25,4 +30,5 @@ class CommentAdmin(admin.ModelAdmin):
 admin.site.register(models.Discount)
 admin.site.register(models.Size)
 admin.site.register(models.Color)
-admin.site.register(models.Information)
+# admin.site.register(models.Information)
+admin.site.register(models.Brand)

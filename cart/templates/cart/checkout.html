@@ -39,7 +39,7 @@
                     {% for item in cart %}
                         <tr id="product" data-product-id="{{ item.unique_id }}">
                             <td class="align-middle">
-                                <img src="{{ item.product.image.url }}" alt="image" style="width: 50px;">
+                                <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.title }}" style="width: 50px;">
                             </td>
                             <td class="align-middle">
                                 <a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a>

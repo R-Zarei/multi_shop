@@ -56,7 +56,7 @@
                             <div class="order-thumbnails my-2">
                                 {% for item in order.items.all|slice:":8"%}
                                     <div class="thumb-item">
-                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}">
+                                        <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.title }}">
                                     </div>
                                 {% endfor %}
                                 {% if order.items.all.count > 10 %}
