@@ -58,18 +58,97 @@
                 <span class="h1 text-uppercase text-dark bg-primary px-2 ml-n1">Shop</span>
             </a>
         </div>
-        <div class="col-lg-4 col-6 text-left">
-            <form action="">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for products">
-                    <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
+
+
+<!-- ====== CSRF Token ====== -->
+        <script>
+            const csrfToken = "{{ csrf_token }}";
+        </script>
+<!-- ====== Advanced Search with Dropdown ====== -->
+<div class="col-lg-4 col-6 text-left">
+    <div class="search-wrapper">
+        <!-- Search Form -->
+        <form action="" method="GET" class="search-form" id="searchForm">
+            <div class="input-group">
+                <input type="text"
+                       class="form-control search-input"
+                       id="searchInput"
+                       placeholder="Search for products..."
+                       autocomplete="off"
+                       aria-label="Search">
+                <div class="input-group-append">
+                    <button class="btn search-btn" type="button" id="searchToggle">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ====== Search Dropdown Panel ====== -->
+            <div class="search-dropdown" id="searchDropdown">
+                <!-- Search Results Section -->
+                <div class="search-results" id="searchResults">
+
+                    <!-- Tags Section -->
+                    <div class="search-section">
+                        <h6 class="search-section-title">Popular Tags</h6>
+                        <div class="search-tags">
+                            <span class="search-tag">#5G</span>
+                            <span class="search-tag">#AI</span>
+                            <span class="search-tag">#OLED</span>
+                            <span class="search-tag">#Gaming</span>
+                            <span class="search-tag">#Flagship</span>
+                        </div>
+                    </div>
+
+                    <!-- View All Results Button -->
+                    <div class="search-footer">
+                        <a href="#" class="search-view-all">
+                            View all results
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
-            </form>
-        </div>
+
+                <!-- Pre-Search Suggestions  Section -->
+                <div class="search-results" id="perSearch">
+
+                    <!-- Tags Section -->
+                    <div class="search-section">
+                        <h6 class="search-section-title">Popular Tags</h6>
+                        <div class="search-tags">
+                            <span class="search-tag">#5G</span>
+                            <span class="search-tag">#AI</span>
+                            <span class="search-tag">#OLED</span>
+                            <span class="search-tag">#Gaming</span>
+                            <span class="search-tag">#Flagship</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading Section -->
+                <div class="search-loading" id="searchLoading" style="display: none;">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Searching...</p>
+                    </div>
+                </div>
+
+                <!-- Empty Results Section -->
+                <div class="search-empty" id="searchEmpty" style="display: none;">
+                    <div class="text-center py-4">
+                        <i class="fas fa-search fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">No results found</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- ====== End Search Section ====== -->
+
+
         <div class="col-lg-4 col-6 text-right">
             <p class="m-0">Customer Service</p>
             <h5 class="m-0">+012 345 6789</h5>

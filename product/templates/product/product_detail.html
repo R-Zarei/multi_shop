@@ -53,16 +53,16 @@
                                 {{ product.brand.name }}
                             </a>
                             <span style="font-size: 0.95rem; color: #adb5bd; align-self: flex-end; margin: 0 6px;">/</span>
-                            <a href="" class="category-link" style="font-size: 0.95rem; font-weight: 400; color: #f5d943; text-decoration: none; align-self: flex-end; transition: color 0.2s;">
-                                product.category.name
+                            <a href="{{ product.category.get_absolute_url }}" class="category-link" style="font-size: 0.95rem; font-weight: 400; color: #f5d943; text-decoration: none; align-self: flex-end; transition: color 0.2s;">
+                                {{ product.category.name }}
                             </a>
                         {% else %}
                             <a href="#" class="brand-name-link ml-3" style="font-size: 1rem; font-weight: 300; color: #f5d943; text-decoration: none; transition: 0.3s; align-self: flex-end;">
                                Other Brands
                             </a>
                             <span style="font-size: 0.95rem; color: #adb5bd; align-self: flex-end; margin: 0 6px;">/</span>
-                            <a href="" class="category-link" style="font-size: 0.95rem; font-weight: 400; color: #f5d943; text-decoration: none; align-self: flex-end; transition: color 0.2s;">
-                                product.category.name
+                            <a href="{{ product.category.get_absolute_url }}" class="category-link" style="font-size: 0.95rem; font-weight: 400; color: #f5d943; text-decoration: none; align-self: flex-end; transition: color 0.2s;">
+                                {{ product.category.name }}
                             </a>
                         {% endif %}
                     </div>
@@ -429,13 +429,13 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        var csrfToken = "{{ csrf_token }}";
-        var removeFromCartUrl = "{% url 'cart:cart_remove' %}";
-        var deleteCommentUrl = "{% url 'product:delete_comment' %}";
-        var editCommentUrl = "{% url 'product:edit_comment' %}";
-        var addFavoriteUrl = "{% url 'account:add_favorite' %}";
-        var delFavoriteUrl = "{% url 'account:remove_favorite' %}";
-        var checkFavoritesUrl = "{% url 'account:check_favorites' %}";
+        {#const csrfToken = "{{ csrf_token }}";#}
+        const removeFromCartUrl = "{% url 'cart:cart_remove' %}";
+        const deleteCommentUrl = "{% url 'product:delete_comment' %}";
+        const editCommentUrl = "{% url 'product:edit_comment' %}";
+        const addFavoriteUrl = "{% url 'account:add_favorite' %}";
+        const delFavoriteUrl = "{% url 'account:remove_favorite' %}";
+        const checkFavoritesUrl = "{% url 'account:check_favorites' %}";
         {#var productId = {{ product.id }};#}
         {#var checkCartUrl = {% url 'cart:check_cart' %};#}
     </script>

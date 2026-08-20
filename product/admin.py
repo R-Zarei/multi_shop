@@ -26,6 +26,14 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('user__phone', 'product__title', 'text')
 
 
+@admin.register(models.Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'parent', 'is_active')
+    readonly_fields = ('created_at',)
+    list_filter = ('is_active',)
+    search_fields = ('name',)
+
+
 # admin.site.register(models.Product)
 admin.site.register(models.Discount)
 admin.site.register(models.Size)

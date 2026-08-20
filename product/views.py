@@ -1,10 +1,11 @@
-from django.contrib.admin.utils import construct_change_message
+from os import name
+
 from django.shortcuts import render, get_object_or_404
-from django.template.defaultfilters import title
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Product, Comment, Brand
+from .models import Product, Comment, Brand, Category
+from django.db.models import Q, Case, When, Value, IntegerField
 
 
 def product_detail(request, external_id, slug):
@@ -16,6 +17,7 @@ def product_detail(request, external_id, slug):
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'product/shop.html', {'products': products})
+
 
 @login_required()
 @require_POST
@@ -96,8 +98,44 @@ def edit_comment(request):
     })
 
 
-
 def brand_product_list(request, slug):
     brand = get_object_or_404(Brand, slug=slug)
     products = Product.objects.filter(brand=brand)
-    return render(request, 'product/brsnd_products_list.html', {'brand': brand, 'products': products})
+    return render(request, 'product/brand_products_list.html', {'brand': brand, 'products': products})
+
+
+def category_product_list(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    products = Product.objects.filter(category=category)
+    return render(request, 'product/category_products_list.html', {'category': category, 'products': products})
+
+
+@require_POST
+def search_suggestions(request):
+    query = request.POST.get('query', '').strip()
+
+    products = Product.objects.filter(title__icontains=query).annotate(
+        priority=Case(
+            When(title__iexact=query, then=Value(1)),
+            When(title__istartswith=query, then=Value(2)),
+            When(title__icontains=query, then=Value(3)),
+            default=Value(4),
+            output_field=IntegerField()
+        )
+    ).order_by('priority')[:5]
+
+    # products = Product.objects.filter(title__icontains=query)[:5]
+    brands = Brand.objects.filter(name__icontains=query)[:5]
+    categories = Category.objects.filter(name__icontains=query)[:5]
+
+    return JsonResponse({
+        'products': [{'title': product.title, 'url': product.get_absolute_url()} for product in products],
+        'brands': [{'title': brand.name.upper(), 'url': brand.get_absolute_url()} for brand in brands],
+        'categories': [{'title': category.name, 'url': category.get_absolute_url()} for category in categories],
+    })
+
+
+@require_GET
+def search_product(request):
+    query = request.GET.get('q', '').strip()
+    return JsonResponse({'result': query})

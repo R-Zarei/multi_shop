@@ -1,4 +1,6 @@
 import uuid
+from unicodedata import category
+
 from django.db import models
 from django.utils.text import slugify
 from django.urls import reverse
@@ -47,6 +49,7 @@ class Information(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=100)
     brand = models.ForeignKey('Brand', on_delete=models.PROTECT, related_name='products', blank=True, null=True)
+    category = models.ForeignKey('Category', on_delete=models.PROTECT, related_name='products')
     external_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     slug = models.SlugField(blank=True)
     description = models.TextField()
@@ -99,12 +102,32 @@ class Brand(models.Model):
     name = models.CharField(max_length=100, unique=True)
     logo = models.ImageField(upload_to='brand', blank=True, null=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
         return reverse('product:brand_product_list', kwargs={'slug': self.slug})
+
+    def __str__(self):
+        return f'{self.pk} - {self.name}'
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100 , unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True, related_name='children')
+    image = models.ImageField(upload_to='categorise', blank=True, null=True)
+    description = models.TextField(blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        return reverse('product:category_product_list', kwargs={'slug': self.slug})
 
     def __str__(self):
         return f'{self.pk} - {self.name}'

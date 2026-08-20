@@ -6,6 +6,8 @@ multi_shop_future.txt
 
 completed_works.txt
 
+temp.txt
+
 # byte code
 __pycache__/
 *.pyc
