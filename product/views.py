@@ -1,11 +1,11 @@
-from os import name
-
+from django.conf.locale import fa
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Product, Comment, Brand, Category
 from django.db.models import Q, Case, When, Value, IntegerField
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def product_detail(request, external_id, slug):
@@ -14,9 +14,20 @@ def product_detail(request, external_id, slug):
     return render(request, 'product/product_detail.html', {'product': product, 'comments': comments})
 
 
-def product_list(request):
-    products = Product.objects.all()
-    return render(request, 'product/shop.html', {'products': products})
+def product_list(request, template='product/products_list.html', contexts=None, products=None):
+    if products is None:
+        products = Product.objects.all()
+
+    paginator = Paginator(products, 1)
+    page_num = request.GET.get('page')
+    page_obj = paginator.get_page(page_num)
+
+    if contexts is None:
+        contexts = {'url': ''}
+    if 'query' not in contexts:
+        contexts['query'] = ""
+    contexts.update({'products': page_obj})
+    return render(request, template_name=template, context=contexts)
 
 
 @login_required()
@@ -101,13 +112,17 @@ def edit_comment(request):
 def brand_product_list(request, slug):
     brand = get_object_or_404(Brand, slug=slug)
     products = Product.objects.filter(brand=brand)
-    return render(request, 'product/brand_products_list.html', {'brand': brand, 'products': products})
+    context = {'brand': brand, 'url': brand.get_absolute_url()}
+    return product_list(request, template='product/brand_products_list.html', contexts=context, products=products)
+    # return render(request, 'product/brand_products_list.html', {'brand': brand, 'products': products})
 
 
 def category_product_list(request, slug):
     category = get_object_or_404(Category, slug=slug)
     products = Product.objects.filter(category=category)
-    return render(request, 'product/category_products_list.html', {'category': category, 'products': products})
+    context = {'category': category, 'url': category.get_absolute_url()}
+    return product_list(request, template='product/category_products_list.html', contexts=context, products=products)
+    # return render(request, 'product/category_products_list.html', {'category': category, 'products': products})
 
 
 @require_POST
@@ -138,4 +153,10 @@ def search_suggestions(request):
 @require_GET
 def search_product(request):
     query = request.GET.get('q', '').strip()
-    return JsonResponse({'result': query})
+    products = Product.objects.filter(
+        Q(title__icontains=query) |
+        Q(brand__name__icontains=query) |
+        Q(category__name__icontains=query)
+    )
+    context = {'url': request.path, 'query': query}
+    return product_list(request, contexts=context, products=products)
