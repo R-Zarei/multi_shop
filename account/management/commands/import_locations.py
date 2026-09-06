@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        with open("account/data/iran_province_city.json", 'r', encoding='utf-8') as file:
+        with open("data/jsons/iran_province_city.json", 'r', encoding='utf-8') as file:
             data = json.load(file)
             for province_name, cities in data.items():
                 province, created = Province.objects.get_or_create(name=province_name)

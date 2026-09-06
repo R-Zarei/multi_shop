@@ -1,4 +1,4 @@
-from django.conf.locale import fa
+# from django.conf.locale import fa
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
@@ -18,7 +18,7 @@ def product_list(request, template='product/products_list.html', contexts=None, 
     if products is None:
         products = Product.objects.all()
 
-    paginator = Paginator(products, 1)
+    paginator = Paginator(products, 12)
     page_num = request.GET.get('page')
     page_obj = paginator.get_page(page_num)
 

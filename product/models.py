@@ -118,8 +118,8 @@ class Brand(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100 , unique=True)
-    slug = models.SlugField(max_length=120, unique=True, blank=True)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=201, unique=True, blank=True)
     parent = models.ForeignKey('self', on_delete=models.PROTECT, blank=True, null=True, related_name='children')
     image = models.ImageField(upload_to='categorise', blank=True, null=True)
     description = models.TextField(blank=True)
@@ -129,9 +129,22 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse('product:category_product_list', kwargs={'slug': self.slug})
 
+    def get_full_path(self):
+        names = [self.name]
+        parent = self.parent
+        while parent is not None:
+            names.append(parent.name)
+            parent = parent.parent
+        # noinspection unreachable-code
+        return ' > '.join(reversed(names))
+
     def __str__(self):
-        return f'{self.pk} - {self.name}'
+        return f'{self.pk} - {self.get_full_path()}'
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        slug = slugify(self.name)
+        if self.parent:
+            slug = f"{slugify(self.parent.name)}-{slug}"
+
+        self.slug = slug
         super().save(*args, **kwargs)

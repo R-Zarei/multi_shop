@@ -1,13 +1,25 @@
+# --- Personal & Project text files ---
 multi_shop_future.txt
-
-.venv
-
-.idea
-
 completed_works.txt
-
 temp.txt
 
-# byte code
+# --- Python & Environment ---
+.venv/
+.env
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# --- IDEs & Editors ---
+.idea/
+.vscode/
+
+# --- Django ---
+db.sqlite3
+media/
+*.log
+
+# --- OS generated files ---
+.DS_Store
+Thumbs.db

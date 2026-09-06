@@ -17,6 +17,12 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'price')
     inlines = [ImageInLine, InformationInLine]
 
+    # Only categories that have no children are displayed in the selection list.
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'category':
+            kwargs['queryset'] = models.Category.objects.filter(children__isnull=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 @admin.register(models.Comment)
 class CommentAdmin(admin.ModelAdmin):
@@ -28,10 +34,19 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'parent', 'is_active')
+    list_display = ('id', 'get_full_path', 'is_active')
     readonly_fields = ('created_at',)
     list_filter = ('is_active',)
     search_fields = ('name',)
+
+
+@admin.register(models.Brand)
+class BrandAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'is_active')
+    readonly_fields = ('created_at',)
+    list_filter = ('is_active',)
+    search_fields = ('name',)
+
 
 
 # admin.site.register(models.Product)
@@ -39,4 +54,4 @@ admin.site.register(models.Discount)
 admin.site.register(models.Size)
 admin.site.register(models.Color)
 # admin.site.register(models.Information)
-admin.site.register(models.Brand)
+# admin.site.register(models.Brand)
