@@ -3,8 +3,6 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
-from jedi.plugins import django
-
 from .models import Product, Comment, Brand, Category, Discount, Color, Size
 from django.db.models import Q, Value, IntegerField
 from django.core.paginator import Paginator
@@ -56,7 +54,7 @@ def product_detail(request, external_id, slug):
 
 def product_list(request, template='product/products_list.html', contexts=None, products=None):
     if products is None:
-        products = Product.objects.all().order_by('?')
+        products = Product.objects.all().order_by('-id')
 
     # give filter values from GET
     price_val = request.GET.get('price')

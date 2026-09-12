@@ -49,10 +49,16 @@ $(document).ready(function () {
         const targetUrl = $(this).attr('href');
 
         if (targetUrl && targetUrl !== '#' && !$(this).parent().hasClass('disabled')) {
-            fetchProducts(targetUrl);
+            const urlParams = new URLSearchParams(targetUrl.split('?')[1]);
+            const pageNum = urlParams.get('page') || 1;
+
+            const filterData = $filterForm.serialize();
+
+            const fullUrl = `${window.location.pathname}?${filterData}&page=${pageNum}`;
+
+            fetchProducts(fullUrl);
         }
     });
-
     // Handle browser back/forward buttons
     window.addEventListener('popstate', function () {
         fetchProducts(window.location.href);
