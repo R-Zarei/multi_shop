@@ -53,7 +53,7 @@ class Product(models.Model):
     external_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     slug = models.SlugField(blank=True)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=14, decimal_places=2)
     discount = models.ForeignKey(Discount, related_name='products', blank=True, null=True, on_delete=models.SET_NULL)
     size = models.ManyToManyField(Size, related_name='products', blank=True)
     color = models.ManyToManyField(Color, related_name='products')

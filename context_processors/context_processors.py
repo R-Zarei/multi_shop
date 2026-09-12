@@ -1,4 +1,5 @@
 from account.models import User
+from product.models import Category
 
 
 def cart_quantity(request):
@@ -10,3 +11,8 @@ def favorites_quantity(request):
         return {'favorites_count': request.user.favorites.count()}
     else:
         return {'favorites_count': len(request.session.get('favorites', []))}
+
+
+def categories(request):
+    root_categories = Category.objects.filter(parent=None).prefetch_related('children__children')
+    return {'root_categories': root_categories}

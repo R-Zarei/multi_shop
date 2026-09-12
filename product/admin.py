@@ -16,6 +16,7 @@ class ImageInLine(admin.StackedInline):
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'price')
     inlines = [ImageInLine, InformationInLine]
+    search_fields = ('title', 'brand__name', 'category__name')
 
     # Only categories that have no children are displayed in the selection list.
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -37,7 +38,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'get_full_path', 'is_active')
     readonly_fields = ('created_at',)
     list_filter = ('is_active',)
-    search_fields = ('name',)
+    search_fields = ('name','parent__name', 'parent__parent__name')
 
 
 @admin.register(models.Brand)

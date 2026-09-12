@@ -2,21 +2,58 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from .models import Product, Comment, Brand, Category
-from django.db.models import Q, Case, When, Value, IntegerField
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse, Http404
+from .models import Product, Comment, Brand, Category, Discount
+from django.db.models import Q, Value, IntegerField
+from django.core.paginator import Paginator
+from django.db.models import Case, When
+from decimal import Decimal
+from account.models import UserViewHistory
+
+
+def get_similar_products(product, limit=5):
+    final_price = product.final_price
+    min_price = final_price * Decimal(0.7)
+    max_price = final_price * Decimal(1.3)
+
+    similar = Product.objects.filter(category=product.category).exclude(id=product.id)
+
+    return similar.order_by(Case(
+        When(brand=product.brand, price__range=(min_price, max_price), then=0),
+        When(price__range=(min_price, max_price), then=1),
+        When(brand=product.brand, then=1),
+        default=2),'?')[:limit]
+
+
+def record_category_view(request, category):
+    if not category:
+        return
+
+    if request.user.is_authenticated:
+        UserViewHistory.objects.update_or_create(user=request.user, category=category)
+    else:
+        recent_cats = request.session.get('recent_cats', [])
+        if category.id in recent_cats:
+            recent_cats.remove(category.id)
+        recent_cats.insert(0, category.id)
+        request.session['recent_cats'] = recent_cats[:5]
+        request.session.modified = True
 
 
 def product_detail(request, external_id, slug):
     product = get_object_or_404(Product, external_id=external_id)
     comments = product.comments.filter(is_visible=True).order_by('-date_added')
-    return render(request, 'product/product_detail.html', {'product': product, 'comments': comments})
+    record_category_view(request, product.category)  # save resent activity
+    return render(request, 'product/product_detail.html', {
+        'product': product,
+        'comments': comments,
+        'suggestions': get_similar_products(product),
+    })
 
 
 def product_list(request, template='product/products_list.html', contexts=None, products=None):
     if products is None:
-        products = Product.objects.all()
+        products = Product.objects.all().order_by('?')
 
     paginator = Paginator(products, 12)
     page_num = request.GET.get('page')
@@ -26,7 +63,7 @@ def product_list(request, template='product/products_list.html', contexts=None, 
         contexts = {'url': ''}
     if 'query' not in contexts:
         contexts['query'] = ""
-    contexts.update({'products': page_obj})
+    contexts['products'] = page_obj
     return render(request, template_name=template, context=contexts)
 
 
@@ -119,7 +156,14 @@ def brand_product_list(request, slug):
 
 def category_product_list(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    products = Product.objects.filter(category=category)
+    category_children = category.children.all()
+    childes = [category]
+    if category_children:
+        childes.extend(category_children)
+        for child in category_children:
+            childes.extend(child.children.all())
+
+    products = Product.objects.filter(category__in=childes).order_by('?')
     context = {'category': category, 'url': category.get_absolute_url()}
     return product_list(request, template='product/category_products_list.html', contexts=context, products=products)
     # return render(request, 'product/category_products_list.html', {'category': category, 'products': products})
@@ -146,7 +190,7 @@ def search_suggestions(request):
     return JsonResponse({
         'products': [{'title': product.title, 'url': product.get_absolute_url()} for product in products],
         'brands': [{'title': brand.name.upper(), 'url': brand.get_absolute_url()} for brand in brands],
-        'categories': [{'title': category.name, 'url': category.get_absolute_url()} for category in categories],
+        'categories': [{'title': category.get_full_path(), 'url': category.get_absolute_url()} for category in categories],
     })
 
 
@@ -160,3 +204,13 @@ def search_product(request):
     )
     context = {'url': request.path, 'query': query}
     return product_list(request, contexts=context, products=products)
+
+@require_GET
+def offer_product(request, percent):
+    discounts = Discount.objects.filter(percentage=percent)
+    if not discounts.exists():
+        raise Http404("No discount with this percentage was found.")
+
+    all_products = Product.objects.filter(discount__in=discounts)
+    return product_list(request, contexts={'url': request.path}, products=all_products)
+

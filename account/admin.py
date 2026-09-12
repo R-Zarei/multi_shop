@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, Address, Province, City, Favorite
+from .models import User, Address, Province, City, Favorite, UserViewHistory
 from .forms import UserChangeForm, UserCreationForm
 
 
@@ -47,6 +47,14 @@ class UserAdmin(BaseUserAdmin):
     ordering = ["email"]
     filter_horizontal = []
     inlines = [AddressInline, FavoriteInline]
+
+@admin.register(UserViewHistory)
+class UserViewHistoryAdmin(admin.ModelAdmin):
+   list_display = ['id', 'user', 'viewed_at', 'category']
+   readonly_fields = ['viewed_at']
+
+
+
 
 
 # Now register the new UserAdmin...

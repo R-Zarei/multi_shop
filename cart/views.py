@@ -9,11 +9,14 @@ from product.models import Product
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth import decorators
 from .zarinpal import ZarinPal
+from .recommnder import get_ai_recommendations
 
 
 def cart_detail_view(request):
     cart = Cart(request)
-    return render(request, 'cart/cart_detail.html', {'cart': cart})
+    cart_products = [item['product'] for item in cart]
+    recommended_products = get_ai_recommendations(cart_products=cart_products, top_n=5*len(cart_products))
+    return render(request, 'cart/cart_detail.html', {'cart': cart, 'recommended_products': recommended_products})
 
 
 @require_POST

@@ -18,13 +18,13 @@ SMS = KavenegarAPI(apikey='484236523838636B4178655269387331566A7932673638786D6C6
 
 
 # move user favorites products from session to Favorite model.
-def move_favorites(request):
-    for product_id in request.session.get('favorites', []):
-        product = Product.objects.filter(id=product_id).first()
-        if product:
-            Favorite.objects.get_or_create(user=request.user, product=product)
-
-    request.session.pop('favorites', None)
+# def move_favorites(request):
+#     for product_id in request.session.get('favorites', []):
+#         product = Product.objects.filter(id=product_id).first()
+#         if product:
+#             Favorite.objects.get_or_create(user=request.user, product=product)
+#
+#     request.session.pop('favorites', None)
 
 
 def user_login(request):
@@ -39,7 +39,7 @@ def user_login(request):
         if form.is_valid():
             user = User.objects.get(phone=form.cleaned_data['phone'])
             login(request, user)
-            move_favorites(request)
+            # move_favorites(request)
 
             next_url = request.POST.get('next')
             if next_url:
@@ -120,7 +120,7 @@ def check_opt(request):
                 user.set_password(user_info['password'])
                 user.save()
             login(request, user)
-            move_favorites(request)
+            # move_favorites(request)
             return redirect('/')
         else:
             form.add_error('code', 'Verification code is invalid')
@@ -288,16 +288,13 @@ def order_details(request, order_code):
     return render(request, 'account/order_details.html',
                   {
                       "order": order,
-
                       # Product prices
                       "products_amount": products_amount,  # before discount
                       "products_with_discount_amount": products_with_discount_amount,  # after product discounts
-
                       # Product discount info
                       "has_products_discount": has_products_discount,  # true if any order item has a product discount
                       "total_discount_amount": total_discount_amount,  # total of product discounts amount
                       "total_products_discount_percent": f"{p_d_precent:.1f}".rstrip('0').rstrip('.'),
-
                       # Order discount code
                       "order_discount_code_price": order.total_price - order.final_total_price,
                   })

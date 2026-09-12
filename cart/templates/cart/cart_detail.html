@@ -43,7 +43,7 @@
                                 <img src="{{ item.product.images.first.image.url }}" alt="{{ item.product.title }}" style="width: 50px;">
                             </td>
                             <td class="align-middle">
-                                <a href="{{ item.product.get_absolut_url }}">{{ item.product.title }}</a>
+                                <a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a>
                             </td>
                             <td class="align-middle">{{ item.size }}</td>
                             <td class="align-middle">{{ item.color }}</td>
@@ -132,12 +132,56 @@
     </div>
     <!-- Cart End -->
 
+    <!-- Products Start -->
+    {% if recommended_products %}
+    <div class="container-fluid py-5">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">You May Also Like</span>
+        </h2>
+        <div class="row px-xl-5">
+            <div class="col">
+                <div class="owl-carousel related-carousel">
+                    {% for product in recommended_products %}
+                        <div class="product-item bg-light">
+                            <div class="product-img position-relative overflow-hidden">
+                                <img class="img-fluid w-100" src="{{ product.images.first.image.url }}" alt="{{ product.title }}">
+                                <div class="product-action">
+                                    <a class="btn btn-outline-dark btn-square" href=""><i
+                                            class="fa fa-shopping-cart"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                </div>
+                            </div>
+                            <div class="text-center py-4">
+                                <a class="h6 text-decoration-none text-truncate" href="{{ product.get_absolute_url }}">{{ product.title }}</a>
+                                <div class="d-flex align-items-center justify-content-center mt-2">
+                                    {% if product.final_price == product.price %}
+                                        <h5>${{ product.price }}</h5>
+                                    {% else %}
+                                        <h5>${{ product.final_price }}</h5>
+                                        <h6 class="text-muted ml-2">
+                                            <del>${{ product.price }}</del>
+                                        </h6>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <!-- Products End -->
+
+
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         var removeFromCartUrl = "{% url 'cart:cart_remove' %}";
         var CartTotalPriceUrl = "{% url 'cart:total_price' %}";
         var cartItemQuantityChangeUrl = "{% url 'cart:item_quantity_change' %}";
-        var csrfToken = "{{ csrf_token }}";
+        {#var csrfToken = "{{ csrf_token }}";#}
     </script>
     <script src="{% static 'js/ajax/cart&checkout_page.js' %}"></script>
 {% endblock %}

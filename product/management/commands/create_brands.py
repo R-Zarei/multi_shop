@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = 'Create 38 realistic brands and link corresponding logo images'
 
     def handle(self, *args, **kwargs):
-        source_dir = os.path.join(settings.BASE_DIR, 'data', 'images', 'brands')
+        source_dir = os.path.join(settings.BASE_DIR, 'data/images/brand_logos')
         os.makedirs(source_dir, exist_ok=True)
 
         brands_data = [

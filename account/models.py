@@ -1,7 +1,7 @@
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+# from product.models import Category
 
 
 class UserManager(BaseUserManager):
@@ -111,6 +111,18 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.user}, {self.product}'
+
+
+class UserViewHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='view_history')
+    category = models.ForeignKey('product.Category', on_delete=models.CASCADE)
+    viewed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-viewed_at']
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'category'], name='unique_user_category_view')
+        ]
 
 
 '''
