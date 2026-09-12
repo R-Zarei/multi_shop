@@ -3,12 +3,15 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
-from .models import Product, Comment, Brand, Category, Discount
+from jedi.plugins import django
+
+from .models import Product, Comment, Brand, Category, Discount, Color, Size
 from django.db.models import Q, Value, IntegerField
 from django.core.paginator import Paginator
 from django.db.models import Case, When
 from decimal import Decimal
 from account.models import UserViewHistory
+from django.template.loader import render_to_string
 
 
 def get_similar_products(product, limit=5):
@@ -55,15 +58,47 @@ def product_list(request, template='product/products_list.html', contexts=None, 
     if products is None:
         products = Product.objects.all().order_by('?')
 
+    # give filter values from GET
+    price_val = request.GET.get('price')
+    colors = request.GET.getlist('color')
+    sizes = request.GET.getlist('size')
+
+    # price filter
+    if price_val and price_val != 'all':
+        try:
+            min_p, max_p = price_val.split('-')
+            products = products.filter(price__gte=min_p, price__lte=max_p)
+        except ValueError:
+            pass
+
+    # color filter
+    if colors:
+        products = products.filter(color__name__in=colors)
+
+    # size filter
+    if sizes:
+        products = products.filter(size__title__in=sizes)
+
+    products = products.distinct()
+
     paginator = Paginator(products, 12)
     page_num = request.GET.get('page')
     page_obj = paginator.get_page(page_num)
 
     if contexts is None:
-        contexts = {'url': ''}
-    if 'query' not in contexts:
-        contexts['query'] = ""
+        contexts = {}
+
+    contexts.setdefault('url', '')
+    contexts.setdefault('query', '') # use for search products view
+    contexts['colors'] = Color.objects.all()
+    contexts['sizes'] =  Size.objects.all()
     contexts['products'] = page_obj
+
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
+    if is_ajax:
+        html = render_to_string('product/includes/products_partial.html', contexts, request=request)
+        return JsonResponse({'html': html})
+
     return render(request, template_name=template, context=contexts)
 
 
@@ -163,7 +198,7 @@ def category_product_list(request, slug):
         for child in category_children:
             childes.extend(child.children.all())
 
-    products = Product.objects.filter(category__in=childes).order_by('?')
+    products = Product.objects.filter(category__in=childes).order_by('-id')
     context = {'category': category, 'url': category.get_absolute_url()}
     return product_list(request, template='product/category_products_list.html', contexts=context, products=products)
     # return render(request, 'product/category_products_list.html', {'category': category, 'products': products})

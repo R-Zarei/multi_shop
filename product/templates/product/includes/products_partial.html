@@ -1,0 +1,74 @@
+<!-- Product list -->
+{% for product in products %}
+    <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+        <div class="product-item bg-light mb-4">
+            <div class="product-img position-relative overflow-hidden">
+                <img class="img-fluid w-100" src="{{ product.images.first.image.url }}" alt="{{ product.title }}">
+                <div class="product-action">
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                    <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                </div>
+            </div>
+            <div class="text-center py-4">
+                <a class="h6 text-decoration-none text-truncate" href="{{ product.get_absolute_url }}">{{ product.title }}</a>
+                <div class="d-flex align-items-center justify-content-center mt-2">
+                    {% if product.final_price == product.price %}
+                        <h5>${{ product.price }}</h5>
+                    {% else %}
+                        <h5>${{ product.final_price }}</h5>
+                        <h6 class="text-muted ml-2"><del>${{ product.price }}</del></h6>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <div class="col-12 text-center py-5">
+        <h3 class="text-muted">No products found !</h3>
+    </div>
+{% endfor %}
+
+<!-- Pagination -->
+<div class="col-12">
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if products.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url }}?page={{ products.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+            {% endif %}
+
+            {% for num in products.paginator.page_range %}
+                {% if products.number == 1 %}
+                    {% if num <= 3 %}
+                        <li class="page-item {% if num == products.number %}active{% endif %}">
+                            <a class="page-link" href="{{ url }}?page={{ num }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    {% if num == 1 or num == products.number or num == products.number|add:"1" %}
+                        <li class="page-item {% if num == products.number %}active{% endif %}">
+                            <a class="page-link" href="{{ url }}?page={{ num }}{% if query %}&q={{ query|urlencode }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url }}?page={{ products.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
