@@ -264,7 +264,7 @@ def edit_address(request):
 
 @decorators.login_required(login_url='/account/login')
 def user_orders(request):
-    orders = Order.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user).order_by('-date_ordered')
     return render(request, 'account/orders.html', {"orders": orders})
 
 

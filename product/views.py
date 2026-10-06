@@ -54,7 +54,7 @@ def product_detail(request, external_id, slug):
 
 def product_list(request, template='product/products_list.html', contexts=None, products=None):
     if products is None:
-        products = Product.objects.all().order_by('-id')
+        products = Product.objects.all().order_by('-price')
 
     # give filter values from GET
     price_val = request.GET.get('price')
@@ -181,7 +181,7 @@ def edit_comment(request):
 
 def brand_product_list(request, slug):
     brand = get_object_or_404(Brand, slug=slug)
-    products = Product.objects.filter(brand=brand)
+    products = Product.objects.filter(brand=brand).order_by('price')
     context = {'brand': brand, 'url': brand.get_absolute_url()}
     return product_list(request, template='product/brand_products_list.html', contexts=context, products=products)
     # return render(request, 'product/brand_products_list.html', {'brand': brand, 'products': products})
@@ -196,7 +196,7 @@ def category_product_list(request, slug):
         for child in category_children:
             childes.extend(child.children.all())
 
-    products = Product.objects.filter(category__in=childes).order_by('-id')
+    products = Product.objects.filter(category__in=childes).order_by('price')
     context = {'category': category, 'url': category.get_absolute_url()}
     return product_list(request, template='product/category_products_list.html', contexts=context, products=products)
     # return render(request, 'product/category_products_list.html', {'category': category, 'products': products})

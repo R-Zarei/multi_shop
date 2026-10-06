@@ -46,7 +46,6 @@ def get_ai_recommendations(cart_products, top_n=5):
     # Get cart categories in AI format (e.g., 'electronics.smartphone')
     cart_cats_ai = [format_category_for_ai(p.category) for p in cart_products if p.category]
 
-    # 🟢 اصلاح اول: گرفتن دسته‌بندی ریشه (Root) برای سبد خرید با کلمه اول
     cart_main_cats = [cat_ai.split('.')[0] for cat_ai in cart_cats_ai]
 
     if not cart_prices:
@@ -61,7 +60,6 @@ def get_ai_recommendations(cart_products, top_n=5):
     cart_product_ids = [p.id for p in cart_products]
     cart_brand_ids = [p.brand_id for p in cart_products if p.brand_id]
 
-    # 🟢 اصلاح دوم: پیدا کردن ریشه مطلق (بالاترین سطح بدون والد) برای جلوگیری از تداخل دسته‌های میانی
     root_category_ids = set()
     for p in cart_products:
         if p.category:
@@ -116,7 +114,6 @@ def get_ai_recommendations(cart_products, top_n=5):
         cand_price = float(cand.final_price)
         cand_cat_ai = format_category_for_ai(cand.category)
 
-        # 🟢 اصلاح سوم: استخراج ریشه کاندیدا برای مقایسه دقیق با ریشه سبد خرید
         cand_main_cat = cand_cat_ai.split('.')[0] if cand_cat_ai != 'unknown' else 'unknown'
 
         p_ratio = cand_price / (cart_mean_price + 1e-5)

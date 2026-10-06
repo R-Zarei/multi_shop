@@ -15,7 +15,7 @@ from .recommnder import get_ai_recommendations
 def cart_detail_view(request):
     cart = Cart(request)
     cart_products = [item['product'] for item in cart]
-    recommended_products = get_ai_recommendations(cart_products=cart_products, top_n=5*len(cart_products))
+    recommended_products = get_ai_recommendations(cart_products=cart_products, top_n=10*len(cart_products))
     return render(request, 'cart/cart_detail.html', {'cart': cart, 'recommended_products': recommended_products})
 
 
